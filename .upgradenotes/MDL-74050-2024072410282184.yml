@@ -1,0 +1,5 @@
+issueNumber: MDL-74050
+notes:
+  mod_assign:
+    - message: The visibility of the  method has been changed to public.
+      type: changed
