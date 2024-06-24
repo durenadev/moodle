@@ -22,23 +22,24 @@ use core_external\external_value;
 use core_external\external_warnings;
 
 /**
- * External function to notify Moodle that an assignment submission is starting.
+ * External function to remove an assignment submission.
  *
- * @package    mod_assign
- * @category  external
- * @copyright  2024 Daniel Ureña <durenadev@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     mod_assign
+ * @category    external
+ * @copyright   2024 Daniel Ureña <durenadev@gmail.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since       Moodle 4.5
  */
 class remove_submission extends external_api {
 
     /**
-     * Describes the parameters for submission_start.
+     * Describes the parameters for remove submission.
      *
      * @return external_function_parameters
-     * @since Moodle 4.0
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters ([
+                'userid' => new external_value(PARAM_INT, 'User id'),
                 'assignid' => new external_value(PARAM_INT, 'Assignment instance id'),
             ]
         );
@@ -47,11 +48,49 @@ class remove_submission extends external_api {
     /**
      * Call to remove submission.
      *
+     * @param int $userid User ID.
      * @param int $assignid Assignment ID.
      * @return array
-     * @since Moodle 4.0
      */
-    public static function execute(int $assignid): array {
+    public static function execute(int $userid, int $assignid): array {
+        $result = $warnings = $errors = [];
+
+        [
+            'assignid' => $assignid,
+            'userids'  => $userids
+        ] = self::validate_parameters(self::execute_parameters(), [
+            'assignid' => $assignid,
+            'userids'  => $userids,
+        ]);
+
+        // Validate and get the assign.
+        list($assign, $course, $cm, $context) = self::validate_assign($assignid);
+
+        foreach ($userids as $userid) {
+            if (!$assign->get_user_submission($userid, false)) {
+                $errors[] = "Userid {$userid} error: No submission to remove";
+            } else {
+                $assign->remove_submission($userid);
+            }
+        }
+
+        $errors = !empty($assign->get_error_messages()) ? array_merge($errors, $assign->get_error_messages()) : $errors;
+
+        foreach ($errors as $errormsg) {
+            $warnings[] = self::generate_warning(
+                $assignid,
+                'couldnotremovesubmission',
+                $errormsg
+            );
+        }
+
+        $result['status']   = empty($errors);
+        $result['warnings'] = $warnings;
+        return $result;
+    }
+
+
+
         global $DB, $USER;
 
         $result = $warnings = [];
@@ -104,15 +143,16 @@ class remove_submission extends external_api {
     }
 
     /**
-     * Describes the submission_start return value.
+     * Describes the remove submissions return value.
      *
      * @return external_single_structure
-     * @since Moodle 4.0
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'submissionid' => new external_value(PARAM_INT, 'New submission ID.'),
+            'status' => new external_value(PARAM_BOOL, 'True if the submission was successfully removed and false if was not.'),
             'warnings' => new external_warnings(),
         ]);
     }
+
+
 }
