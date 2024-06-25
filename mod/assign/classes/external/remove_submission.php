@@ -53,91 +53,64 @@ class remove_submission extends external_api {
      * @return array
      */
     public static function execute(int $userid, int $assignid): array {
-        $result = $warnings = $errors = [];
 
+        // Initialize return variables.
+        $warnings = [];
+        $result   = [];
+        $status   = false;
+        
         [
-            'assignid' => $assignid,
-            'userids'  => $userids
+            'userid' => $userid,
+            'assignid'  => $assignid
         ] = self::validate_parameters(self::execute_parameters(), [
-            'assignid' => $assignid,
-            'userids'  => $userids,
+            'userid' => $userid,
+            'assignid'  => $assignid,
         ]);
 
         // Validate and get the assign.
-        list($assign, $course, $cm, $context) = self::validate_assign($assignid);
+        try {
+            list($assign, $course, $cm, $context) = self::validate_assign($assignid);
+        } catch (\Exception $e) {
+            $warnings[] = [
+                'warningcode' =>  $e->errorcode,
+                'message'     => get_string($e->errorcode, 'error', 'mod_assign'),
+            ];
+            return [
+                'status'    => $status,
+                'warnings' => $warnings,
+            ];
+        }
+        // Get submission.
+        $submission = $assign->get_user_submission($userid, false);
 
-        foreach ($userids as $userid) {
-            if (!$assign->get_user_submission($userid, false)) {
-                $errors[] = "Userid {$userid} error: No submission to remove";
-            } else {
-                $assign->remove_submission($userid);
-            }
+        if (!$submission) {
+            // No submission to remove.
+            $warnings[] = [
+                'warningcode' => 'submissionempty',
+                'message'     => get_string('submissionempty', 'assign'),
+            ];
+            return [
+                'status'    => $status,
+                'warnings' => $warnings,
+            ];
         }
 
-        $errors = !empty($assign->get_error_messages()) ? array_merge($errors, $assign->get_error_messages()) : $errors;
-
-        foreach ($errors as $errormsg) {
-            $warnings[] = self::generate_warning(
-                $assignid,
-                'couldnotremovesubmission',
-                $errormsg
-            );
+        $canedit = $assign->can_edit_submission($userid);
+        if (!$canedit) {
+            // Cant edit submission.
+            $warnings[] = [
+                'warningcode' => 'submissionnoteditable',
+                'message'     => get_string('submissionnoteditable', 'assign'),
+            ];
+            return [
+                'status'    => $status,
+                'warnings' => $warnings,
+            ];
         }
 
-        $result['status']   = empty($errors);
-        $result['warnings'] = $warnings;
-        return $result;
-    }
+        $removed = $assign->remove_submission($userid);
 
-
-
-        global $DB, $USER;
-
-        $result = $warnings = [];
-        $submission = null;
-
-        [
-            'assignid' => $assignid,
-        ] = self::validate_parameters(self::execute_parameters(), [
-            'assignid' => $assignid,
-        ]);
-
-        list($assignment, $course, $cm, $context) = self::validate_assign($assignid);
-
-        $assignment->update_effective_access($USER->id);
-        $latestsubmission = external_api::get_user_or_group_submission($assignment, $USER->id);
-        if (!$assignment->submissions_open($USER->id)) {
-            $warnings[] = self::generate_warning($assignid,
-                'submissionnotopen',
-                get_string('submissionnotopen', 'assign'));
-        }
-
-        if (!$assignment->is_time_limit_enabled()) {
-            $warnings[] = self::generate_warning($assignid,
-                'timelimitnotenabled',
-                get_string('timelimitnotenabled', 'assign'));
-        } else if ($assignment->is_attempt_in_progress()) {
-            $warnings[] = self::generate_warning($assignid,
-                'opensubmissionexists',
-                get_string('opensubmissionexists', 'assign'));
-        }
-
-        if (empty($warnings)) {
-            // If there is an open submission with no start time, use latest submission, otherwise create a new submission.
-            if (!empty($latestsubmission)
-                    && $latestsubmission->status !== ASSIGN_SUBMISSION_STATUS_SUBMITTED
-                    && empty($latestsubmission->timestarted)) {
-                $submission = $latestsubmission;
-            } else {
-                $submission = external_api::get_user_or_group_submission($assignment, $USER->id, 0, true);
-            }
-
-            // Set the start time of the submission.
-            $submission->timestarted = time();
-            $DB->update_record('assign_submission', $submission);
-        }
-
-        $result['submissionid'] = $submission ? $submission->id : 0;
+        $result['status']   = empty($errormsg);
         $result['warnings'] = $warnings;
         return $result;
     }
