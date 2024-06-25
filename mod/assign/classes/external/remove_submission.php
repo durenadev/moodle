@@ -48,8 +48,8 @@ class remove_submission extends external_api {
     /**
      * Call to remove submission.
      *
-     * @param int $userid User ID.
-     * @param int $assignid Assignment ID.
+     * @param int $userid User id to remove submission
+     * @param int $assignid The id of the assignment
      * @return array
      */
     public static function execute(int $userid, int $assignid): array {
@@ -77,12 +77,12 @@ class remove_submission extends external_api {
             ];
             return [
                 'status'    => $status,
-                'warnings' => $warnings,
+                'warnings'  => $warnings,
             ];
         }
         // Get submission.
         $submission = $assign->get_user_submission($userid, false);
-
+// print_r($submission);die;
         if (!$submission) {
             // No submission to remove.
             $warnings[] = [
@@ -110,7 +110,7 @@ class remove_submission extends external_api {
 
         $removed = $assign->remove_submission($userid);
 
-        $result['status']   = empty($errormsg);
+        $result['status']   = $removed;
         $result['warnings'] = $warnings;
         return $result;
     }
