@@ -31,18 +31,16 @@ use core_external\external_warnings;
  * @since       Moodle 4.5
  */
 class remove_submission extends external_api {
-
     /**
      * Describes the parameters for remove submission.
      *
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters ([
+        return new external_function_parameters([
                 'userid' => new external_value(PARAM_INT, 'User id'),
                 'assignid' => new external_value(PARAM_INT, 'Assignment instance id'),
-            ]
-        );
+            ]);
     }
 
     /**
@@ -58,7 +56,7 @@ class remove_submission extends external_api {
         $warnings = [];
         $result   = [];
         $status   = false;
-        
+
         [
             'userid' => $userid,
             'assignid'  => $assignid
@@ -69,10 +67,10 @@ class remove_submission extends external_api {
 
         // Validate and get the assign.
         try {
-            list($assign, $course, $cm, $context) = self::validate_assign($assignid);
+            [$assign, $course, $cm, $context] = self::validate_assign($assignid);
         } catch (\Exception $e) {
             $warnings[] = [
-                'warningcode' =>  $e->errorcode,
+                'warningcode' => $e->errorcode,
                 'message'     => get_string($e->errorcode, 'error', 'mod_assign'),
             ];
             return [
@@ -82,7 +80,6 @@ class remove_submission extends external_api {
         }
         // Get submission.
         $submission = $assign->get_user_submission($userid, false);
-// print_r($submission);die;
         if (!$submission) {
             // No submission to remove.
             $warnings[] = [
@@ -126,6 +123,4 @@ class remove_submission extends external_api {
             'warnings' => new external_warnings(),
         ]);
     }
-
-
 }

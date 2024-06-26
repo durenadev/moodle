@@ -35,10 +35,10 @@ require_once("$CFG->dirroot/mod/assign/tests/externallib_advanced_testcase.php")
  * @copyright  2024 Daniel Ureña <durenadev@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class remove_submission_test extends \mod_assign\externallib_advanced_testcase {
-
+final class remove_submission_test extends \mod_assign\externallib_advanced_testcase {
     // Use the generator helper.
     use mod_assign_test_generator;
+
     /**
      * Called before every test.
      */
@@ -64,10 +64,6 @@ class remove_submission_test extends \mod_assign\externallib_advanced_testcase {
         $this->submit_for_grading($student1, $assign);
         $this->add_submission($student2, $assign);
         $this->submit_for_grading($student2, $assign);
-// $role = $DB->get_record('role', ['shortname' => 'teacher'], '*', MUST_EXIST);
-// $context = \context_course::instance($course->id);
-// assign_capability('mod/assign:editothersubmission', CAP_ALLOW, $role->id, $context->id, true);
-// $this->setUser($teacher);
         return [$course, $student1, $student2, $student3, $teacher, $assign];
     }
 
@@ -77,7 +73,7 @@ class remove_submission_test extends \mod_assign\externallib_advanced_testcase {
      */
     public function test_remove_submission_with_invalid_assign_id(): void {
         $this->expectException(\dml_exception::class);
-        list($course, $student1, $student2, $student3, $teacher, $assign) = $this->prepare_and_add_submissions();
+        [$course, $student1, $student2, $student3, $teacher, $assign] = $this->prepare_and_add_submissions();
         remove_submission::execute(123, $student1->id);
     }
 
@@ -87,7 +83,7 @@ class remove_submission_test extends \mod_assign\externallib_advanced_testcase {
      */
     public function test_remove_submission(): void {
         global $DB;
-        list($course, $student1, $student2, $student3, $teacher, $assign) = $this->prepare_and_add_submissions();
+        [$course, $student1, $student2, $student3, $teacher, $assign] = $this->prepare_and_add_submissions();
         $submission1 = $assign->get_user_submission($student1->id, 0);
         $submission2 = $assign->get_user_submission($student2->id, 0);
 
@@ -111,30 +107,11 @@ class remove_submission_test extends \mod_assign\externallib_advanced_testcase {
      *
      */
     public function test_remove_submission_with_invalid_user_id(): void {
-        list($course, $student1, $student2, $student3, $teacher, $assign) = $this->prepare_and_add_submissions();
+        [$course, $student1, $student2, $student3, $teacher, $assign] = $this->prepare_and_add_submissions();
         $result = remove_submission::execute($assign->get_instance()->id, 123);
         $this->assertFalse($result['status']);
         $this->assertEquals('submissionempty', $result['warnings'][0]['warningcode']);
     }
-
-    /**
-     * Test remove submission without capabilities by WS.
-     *
-     */
-    // public function test_remove_submission_without_capabilities(): void {
-    //     global $DB;
-    //     list($course, $student1, $student2, $student3, $teacher, $assign) = $this->prepare_and_add_submissions();
-    //     // Disable mandatory capabilities to remove one assignment attempt.
-    //     $role    = $DB->get_record('role', ['shortname' => 'teacher'], '*', MUST_EXIST);
-    //     $context = \context_course::instance($course->id);
-    //     assign_capability('mod/assign:editothersubmission', CAP_PROHIBIT, $role->id, $context->id, true);
-
-    //     $result = remove_submission::execute($assign->get_instance()->id, [$student1->id, $student2->id, $student3->id]);
-    //     $this->assertCount(3, $result['warnings']);
-    //     $this->assertFalse($result['status']);
-    //     $this->assertEquals('couldnotremovesubmission', $result['warnings'][0]['warningcode']);
-    //     $this->assertEquals('couldnotremovesubmission', $result['warnings'][1]['warningcode']);
-    // }
 
     /**
      * Test user can remove own submission.
@@ -142,7 +119,7 @@ class remove_submission_test extends \mod_assign\externallib_advanced_testcase {
      */
     public function test_remove_own_submission(): void {
         global $DB;
-        list($course, $student1, $student2, $student3, $teacher, $assign) = $this->prepare_and_add_submissions();
+        [$course, $student1, $student2, $student3, $teacher, $assign] = $this->prepare_and_add_submissions();
         $this->setUser($student3);
 
         // Remove own submission when user has no submission to remove.
@@ -161,41 +138,4 @@ class remove_submission_test extends \mod_assign\externallib_advanced_testcase {
         $submissionquery = $DB->get_record('assign_submission', ['id' => $submission->id]);
         $this->assertEquals(ASSIGN_SUBMISSION_STATUS_NEW, $submissionquery->status);
     }
-
-    /**
-     * Test user can not remove another user's submission.
-     *
-     */
-    // public function test_cant_remove_another_user_submission(): void {
-    //     list($course, $student1, $student2, $student3, $teacher, $assign) = $this->prepare_and_add_submissions();
-    //     $student3 = $this->getDataGenerator()->create_and_enrol($course, 'student');
-    //     $this->setUser($student1);
-    //     $result = remove_submission::execute($assign->get_instance()->id, [$student2->id, $student3->id]);
-    //     $this->assertCount(2, $result['warnings']);
-    //     $this->assertFalse($result['status']);
-    //     $this->assertEquals('couldnotremovesubmission', $result['warnings'][0]['warningcode']);
-    //     $this->assertEquals('couldnotremovesubmission', $result['warnings'][1]['warningcode']);
-    // }
-
-    /**
-     * Test when the user has no submissions to remove.
-     *
-     */
-    // public function test_remove_submission_no_submission_to_delete(): void {
-    //     global $DB;
-    //     list($course, $student1, $student2, $student3, $teacher, $assign) = $this->prepare_and_add_submissions();
-    //     $student3 = $this->getDataGenerator()->create_and_enrol($course, 'student');
-    //     $result = remove_submission::execute($assign->get_instance()->id, [$student3->id, $student1->id, $student2->id]);
-    //     $this->assertFalse($result['status']);
-    //     $this->assertCount(1, $result['warnings']);
-    //     $this->assertEquals('couldnotremovesubmission', $result['warnings'][0]['warningcode']);
-
-    //     // Make sure the others submissions were removed.
-    //     $submission      = $assign->get_user_submission($student1->id, 0);
-    //     $submissionquery = $DB->get_record('assign_submission', ['id' => $submission->id]);
-    //     $this->assertEquals(ASSIGN_SUBMISSION_STATUS_NEW, $submissionquery->status);
-    //     $submission      = $assign->get_user_submission($student2->id, 0);
-    //     $submissionquery = $DB->get_record('assign_submission', ['id' => $submission->id]);
-    //     $this->assertEquals(ASSIGN_SUBMISSION_STATUS_NEW, $submissionquery->status);
-    // }
 }
