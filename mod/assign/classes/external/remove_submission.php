@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_assign\external;
-
+use core_user;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
@@ -51,7 +51,6 @@ class remove_submission extends external_api {
      * @return array
      */
     public static function execute(int $userid, int $assignid): array {
-
         // Initialize return variables.
         $warnings = [];
         $result   = [];
@@ -78,9 +77,14 @@ class remove_submission extends external_api {
                 'warnings'  => $warnings,
             ];
         }
+
         // Get submission.
         $submission = $assign->get_user_submission($userid, false);
-        if (!$submission) {
+        if (
+            !$submission ||
+            $submission->status == ASSIGN_SUBMISSION_STATUS_NEW ||
+            $submission->status == ASSIGN_SUBMISSION_STATUS_REOPENED
+        ) {
             // No submission to remove.
             $warnings[] = [
                 'warningcode' => 'submissionempty',
@@ -95,16 +99,17 @@ class remove_submission extends external_api {
         $canedit = $assign->can_edit_submission($userid);
         if (!$canedit) {
             // Cant edit submission.
+            $user = core_user::get_user($userid);
             $warnings[] = [
-                'warningcode' => 'submissionnoteditable',
-                'message'     => get_string('submissionnoteditable', 'assign'),
+                'warningcode' => 'usersubmissioncannotberemoved',
+                'message'     => get_string('usersubmissioncannotberemoved', 'assign', fullname($user)),
             ];
+
             return [
                 'status'    => $status,
                 'warnings' => $warnings,
             ];
         }
-
         $removed = $assign->remove_submission($userid);
 
         $result['status']   = $removed;
