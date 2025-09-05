@@ -2769,7 +2769,7 @@ class mod_assign_external extends \mod_assign\external\external_api {
         $userdesc = core_user_external::user_description();
         // List unneeded properties.
         $unneededproperties = [
-            'auth', 'confirmed', 'lang', 'calendartype', 'theme', 'timezone', 'mailformat'
+            'auth', 'confirmed', 'lang', 'calendartype', 'theme', 'timezone', 'mailformat', 'initials',
         ];
         // Remove unneeded properties for consistency with the previous version.
         foreach ($unneededproperties as $prop) {
