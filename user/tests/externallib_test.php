@@ -30,6 +30,7 @@ use core_external\external_api;
 use core_files_external;
 use core_user_external;
 use externallib_advanced_testcase;
+use core_user;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -123,6 +124,7 @@ final class externallib_test extends externallib_advanced_testcase {
             }
             $this->assertEquals($generateduser->firstname, $returneduser['firstname']);
             $this->assertEquals($generateduser->lastname, $returneduser['lastname']);
+            $this->assertEquals(core_user::get_initials($generateduser), $returneduser['initials']);
             if ($generateduser->email != $USER->email) { // Don't check the tmp modified $USER email.
                 $this->assertEquals($generateduser->email, $returneduser['email']);
             }
@@ -280,6 +282,7 @@ final class externallib_test extends externallib_advanced_testcase {
                 }
                 $this->assertEquals($generateduser->firstname, $returneduser['firstname']);
                 $this->assertEquals($generateduser->lastname, $returneduser['lastname']);
+                $this->assertEquals(core_user::get_initials($generateduser), $returneduser['initials']);
                 if ($generateduser->email != $USER->email) { //don't check the tmp modified $USER email
                     $this->assertEquals($generateduser->email, $returneduser['email']);
                 }
@@ -439,6 +442,7 @@ final class externallib_test extends externallib_advanced_testcase {
 
         // Check we retrieve the good total number of enrolled users + no error on capability.
         $this->assertEquals(1, count($enrolledusers));
+        $this->assertEquals(core_user::get_initials($USER), $enrolledusers[0]['initials']);
     }
 
     public function test_get_user_course_profile_as_admin(): void {
@@ -469,6 +473,7 @@ final class externallib_test extends externallib_advanced_testcase {
                 $this->assertEquals($data->user1->idnumber, $enrolleduser['idnumber']);
                 $this->assertEquals($data->user1->firstname, $enrolleduser['firstname']);
                 $this->assertEquals($data->user1->lastname, $enrolleduser['lastname']);
+                $this->assertEquals(core_user::get_initials($data->user1), $enrolleduser['initials']);
                 $this->assertEquals($data->user1->email, $enrolleduser['email']);
                 $this->assertEquals($data->user1->address, $enrolleduser['address']);
                 $this->assertEquals($data->user1->phone1, $enrolleduser['phone1']);

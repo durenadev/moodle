@@ -21,6 +21,7 @@ use core_external\external_api;
 use enrol_user_enrolment_form;
 use externallib_advanced_testcase;
 use stdClass;
+use core_user;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,6 +38,7 @@ require_once($CFG->dirroot . '/enrol/externallib.php');
  * @copyright  2012 Jerome Mouneyrac
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since Moodle 2.4
+ * @coversDefaultClass \core_enrol_external
  */
 final class externallib_test extends externallib_advanced_testcase {
 
@@ -451,6 +453,48 @@ final class externallib_test extends externallib_advanced_testcase {
                         'and onlysuspended are set, this is probably not what you want!';
         $this->expectExceptionMessage($message);
         core_enrol_external::get_enrolled_users($course->id, $options);
+    }
+
+    /**
+     * Verify get_enrolled_users() and test initials.
+     * @covers ::get_enrolled_users
+     */
+    public function test_get_enrolled_users_initials(): void {
+        global $USER;
+
+        $this->resetAfterTest();
+
+        // Create the course and the users.
+        $course = $this->getDataGenerator()->create_course();
+        $coursecontext = \context_course::instance($course->id);
+        $user0 = $this->getDataGenerator()->create_user(['username' => 'user0active']);
+
+        // Enrol the users in the course.
+        $this->getDataGenerator()->enrol_user($user0->id, $course->id);
+
+        // Create a role to add the allowedcaps. Users will have this role assigned.
+        $roleid = $this->getDataGenerator()->create_role();
+        // Allow the specified capabilities.
+        assign_capability('moodle/course:enrolreview', CAP_ALLOW, $roleid, $coursecontext);
+        assign_capability('moodle/user:viewalldetails', CAP_ALLOW, $roleid, $coursecontext);
+
+        // Switch to the user and assign the role.
+        $this->setUser($user0);
+        role_assign($roleid, $USER->id, $coursecontext);
+
+        // Active users.
+        $options = [
+            ['name' => 'onlyactive', 'value' => true],
+            ['name' => 'userfields', 'value' => 'id,username'],
+        ];
+        $activeusers = core_enrol_external::get_enrolled_users($course->id, $options);
+
+        // We need to execute the return values cleaning process to simulate the web service server.
+        $activeusers = external_api::clean_returnvalue(core_enrol_external::get_enrolled_users_returns(), $activeusers);
+        $this->assertCount(1, $activeusers);
+
+        $this->assertStringContainsString('active', $activeusers[0]['username']);
+        $this->assertEquals(core_user::get_initials($user0), $activeusers[0]['initials']);
     }
 
     /**
@@ -1070,6 +1114,7 @@ final class externallib_test extends externallib_advanced_testcase {
         $expecteduser = reset($expecteduserlist);
         $this->assertEquals(1, count($expecteduserlist));
         $this->assertEquals($data->student1->id, $expecteduser['id']);
+        $this->assertEquals(core_user::get_initials($data->student1), $expecteduser['initials']);
     }
 
     /**
@@ -1406,6 +1451,7 @@ final class externallib_test extends externallib_advanced_testcase {
         $this->assertEquals($user1->id, $result['id']);
         $this->assertEquals($user1->email, $result['email']);
         $this->assertEquals(fullname($user1), $result['fullname']);
+        $this->assertEquals(core_user::get_initials($user1), $result['initials']);
 
         $this->setUser($user1);
 
@@ -1531,8 +1577,9 @@ final class externallib_test extends externallib_advanced_testcase {
 
         // Check the fields are the expected ones.
         $this->assertEquals(['id', 'fullname', 'customfields',
-                'profileimageurl', 'profileimageurlsmall', 'department'], array_keys($result1));
+                'profileimageurl', 'profileimageurlsmall', 'department', 'initials'], array_keys($result1));
         $this->assertEquals('Eigh User', $result1['fullname']);
+        $this->assertEquals(core_user::get_initials($user1), $result1['initials']);
         $this->assertEquals('Amphibians', $result1['department']);
 
         // Check the custom fields ONLY include the user identity one.

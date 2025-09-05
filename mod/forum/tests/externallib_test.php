@@ -18,6 +18,7 @@ namespace mod_forum;
 
 use core_external\external_api;
 use externallib_advanced_testcase;
+use core_user;
 use mod_forum_external;
 
 defined('MOODLE_INTERNAL') || die();
@@ -358,6 +359,7 @@ final class externallib_test extends externallib_advanced_testcase {
         $exporteduser2 = [
             'id' => (int) $user2->id,
             'fullname' => fullname($user2),
+            'initials' => \core_user::get_initials($user2),
             'isdeleted' => false,
             'groups' => [],
             'urls' => [
@@ -365,13 +367,13 @@ final class externallib_test extends externallib_advanced_testcase {
                 'profileimage' => $urlfactory->get_author_profile_image_url($user2entity),
             ]
         ];
-        $user2->fullname = $exporteduser2['fullname'];
 
         $user3 = self::getDataGenerator()->create_user(['fullname' => "Mr Pants 1"]);
         $user3entity = $entityfactory->get_author_from_stdClass($user3);
         $exporteduser3 = [
             'id' => (int) $user3->id,
             'fullname' => fullname($user3),
+            'initials' => \core_user::get_initials($user3),
             'groups' => [],
             'isdeleted' => false,
             'urls' => [
@@ -379,7 +381,6 @@ final class externallib_test extends externallib_advanced_testcase {
                 'profileimage' => $urlfactory->get_author_profile_image_url($user3entity),
             ]
         ];
-        $user3->fullname = $exporteduser3['fullname'];
         $forumgenerator = self::getDataGenerator()->get_plugin_generator('mod_forum');
 
         // Set the first created user to the test user.
@@ -456,6 +457,7 @@ final class externallib_test extends externallib_advanced_testcase {
         $exporteduser3 = [
             'id' => (int) $user3->id,
             'fullname' => get_string('deleteduser', 'mod_forum'),
+            'initials' => '',
             'groups' => [],
             'isdeleted' => true,
             'urls' => [
@@ -997,7 +999,6 @@ final class externallib_test extends externallib_advanced_testcase {
             'starred' => false,
             'canfavourite' => true
         );
-
         // Call the external function passing forum id.
         $discussions = mod_forum_external::get_forum_discussions($forum1->id);
         $discussions = external_api::clean_returnvalue(mod_forum_external::get_forum_discussions_returns(), $discussions);
@@ -1010,10 +1011,12 @@ final class externallib_test extends externallib_advanced_testcase {
         $userpicture = new \user_picture($user1);
         $userpicture->size = 2; // Size f2.
         $expectedreturn['discussions'][0]['userpictureurl'] = $userpicture->get_url($PAGE)->out(false);
+        $expectedreturn['discussions'][0]['userinitials'] = core_user::get_initials($user1);
 
         $userpicture = new \user_picture($user4);
         $userpicture->size = 2; // Size f2.
         $expectedreturn['discussions'][0]['usermodifiedpictureurl'] = $userpicture->get_url($PAGE)->out(false);
+        $expectedreturn['discussions'][0]['usermodifiedinitials'] = ''; // Deleted user Initials.
 
         $this->assertEquals($expectedreturn, $discussions);
 
@@ -2338,6 +2341,7 @@ final class externallib_test extends externallib_advanced_testcase {
         $exporteduser1 = [
             'id' => (int) $user1->id,
             'fullname' => fullname($user1),
+            'initials' => \core_user::get_initials($user1),
             'groups' => [],
             'urls' => [
                 'profile' => $urlfactory->get_author_profile_url($user1entity, $course1->id)->out(false),
@@ -2351,6 +2355,7 @@ final class externallib_test extends externallib_advanced_testcase {
         $exporteduser2 = [
             'id' => (int) $user2->id,
             'fullname' => fullname($user2),
+            'initials' => \core_user::get_initials($user2),
             'groups' => [],
             'urls' => [
                 'profile' => $urlfactory->get_author_profile_url($user2entity, $course1->id)->out(false),
