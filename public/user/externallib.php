@@ -786,6 +786,7 @@ class core_user_external extends \core_external\external_api {
             // Return the user only if the searched field is returned.
             // Otherwise it means that the $USER was not allowed to search the returned user.
             if (!empty($userdetails) and !empty($userdetails[$field])) {
+                $userdetails['initials'] = core_user::get_initials($user);
                 $returnedusers[] = $userdetails;
             }
         }
@@ -1117,6 +1118,7 @@ class core_user_external extends \core_external\external_api {
             'firstname'   => new external_value(core_user::get_property_type('firstname'), 'The first name(s) of the user', VALUE_OPTIONAL),
             'lastname'    => new external_value(core_user::get_property_type('lastname'), 'The family name of the user', VALUE_OPTIONAL),
             'fullname'    => new external_value(core_user::get_property_type('firstname'), 'The fullname of the user'),
+            'initials'    => new external_value(PARAM_TEXT, 'The initials of the user'),
             'email'       => new external_value(core_user::get_property_type('email'), 'An email address - allow email as root@localhost', VALUE_OPTIONAL),
             'address'     => new external_value(core_user::get_property_type('address'), 'Postal address', VALUE_OPTIONAL),
             'phone1'      => new external_value(core_user::get_property_type('phone1'), 'Phone 1', VALUE_OPTIONAL),

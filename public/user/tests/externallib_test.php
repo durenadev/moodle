@@ -29,6 +29,7 @@ namespace core_user;
 use core_external\external_api;
 use core_files_external;
 use core_user_external;
+use core_user;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -277,6 +278,7 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
                 }
                 $this->assertEquals($generateduser->firstname, $returneduser['firstname']);
                 $this->assertEquals($generateduser->lastname, $returneduser['lastname']);
+                $this->assertEquals(core_user::get_initials($generateduser), $returneduser['initials']);
                 if ($generateduser->email != $USER->email) { //don't check the tmp modified $USER email
                     $this->assertEquals($generateduser->email, $returneduser['email']);
                 }
