@@ -599,6 +599,7 @@ class core_enrol_external extends external_api {
                     }
                     $userdetails['customfields'] = array_values($userdetails['customfields']);
                 }
+                $userdetails['initials'] = core_user::get_initials($user);
                 $results[] = $userdetails;
             }
         }
@@ -699,6 +700,7 @@ class core_enrol_external extends external_api {
         );
         foreach ($users['users'] as $user) {
             if ($userdetails = user_get_user_details($user, $course, $requiredfields)) {
+                $userdetails['initials'] = core_user::get_initials($user);
                 $results[] = $userdetails;
             }
         }
@@ -904,6 +906,7 @@ class core_enrol_external extends external_api {
         foreach ($enrolledusers as $user) {
             context_helper::preload_from_record($user);
             if ($userdetails = user_get_user_details($user, $course, $userfields)) {
+                $userdetails['initials'] = core_user::get_initials($user);
                 $users[] = $userdetails;
             }
         }
@@ -925,6 +928,7 @@ class core_enrol_external extends external_api {
                     'username'    => new external_value(PARAM_RAW, 'Username policy is defined in Moodle security config', VALUE_OPTIONAL),
                     'firstname'   => new external_value(PARAM_NOTAGS, 'The first name(s) of the user', VALUE_OPTIONAL),
                     'lastname'    => new external_value(PARAM_NOTAGS, 'The family name of the user', VALUE_OPTIONAL),
+                    'initials'    => new external_value(PARAM_NOTAGS, 'The initials of the user', VALUE_OPTIONAL),
                     'fullname'    => new external_value(PARAM_NOTAGS, 'The fullname of the user'),
                     'email'       => new external_value(PARAM_TEXT, 'An email address - allow email as root@localhost', VALUE_OPTIONAL),
                     'address'     => new external_value(PARAM_TEXT, 'Postal address', VALUE_OPTIONAL),
