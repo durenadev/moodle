@@ -1,0 +1,9 @@
+issueNumber: MDL-84960
+notes:
+  core_webservice:
+    - message: >-
+        Several core web services now include a new `initials` field in user data
+        structures. This change is backward-compatible.
+        Client applications should ensure they can handle the additional `initials`
+        field in web service responses.
+      type: improved
