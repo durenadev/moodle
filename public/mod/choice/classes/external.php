@@ -152,10 +152,24 @@ class mod_choice_external extends external_api {
                               );
         }
 
+        $userresponse = array();
+        if (has_capability('mod/choice:choose', $context)) {
+            $current = choice_get_my_response($choice);
+            if (!empty($current)) {
+                foreach ($current as $c) {
+                    $userresponse[] = array(
+                        'optionid' => $c->optionid,
+                        'text' => format_string(choice_get_option_text($choice, $c->optionid))
+                    );
+                }
+            }
+        }
+
         $warnings = array();
         return array(
             'options' => $options,
-            'warnings' => $warnings
+            'warnings' => $warnings,
+            'userresponse' => $userresponse,
         );
     }
 
@@ -191,6 +205,14 @@ class mod_choice_external extends external_api {
                     )
                 ),
                 'warnings' => new external_warnings(),
+                'userresponse' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'optionid' => new external_value(PARAM_INT, 'option id'),
+                            'text' => new external_value(PARAM_RAW, 'text of the choice option')
+                        ), 'User selected options'
+                    )
+                )
             )
         );
     }
