@@ -26,6 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_course\external\helper_for_get_mods_by_courses;
 use core_course\external\course_summary_exporter;
 use core_courseformat\formatactions;
 use core_external\external_api;
@@ -260,6 +261,14 @@ class core_course_external extends external_api {
                                 }
                             }
                         }
+                        $instances = get_all_instances_in_courses($cm->modname, [$course->id => $course], false);
+                        $instance = null;
+                        foreach ($instances as $ins) {
+                            if ($ins->id == $cm->instance) {
+                                $instance = $ins;
+                                break;
+                            }
+                        }
 
                         $module = array();
 
@@ -269,6 +278,19 @@ class core_course_external extends external_api {
 
                         // Common info (for people being able to see the module or availability dates).
                         $module['id'] = $cm->id;
+                        $module['coursemodule'] = $cm->id;
+                        $module['course'] = $params['courseid'];
+                        if ($instance && isset($instance->intro)) {
+                            $module['intro']  = $instance->intro;
+                            $module['introformat'] = $instance->introformat;
+                        } else {
+                            $module['intro']  = '';
+                            $module['introformat'] = FORMAT_HTML;
+                        }
+                        $module['lang'] = '';
+                        if ($instance && isset($instance->lang)) {
+                            $module['lang'] = $instance->lang;
+                        }
                         $module['name'] = \core_external\util::format_string($cm->name, $modcontext);
                         $module['instance'] = $cm->instance;
                         $module['contextid'] = $modcontext->id;
@@ -469,7 +491,8 @@ class core_course_external extends external_api {
                         VALUE_OPTIONAL,
                     ),
                     'modules' => new external_multiple_structure(
-                        new external_single_structure(
+                        new external_single_structure(array_merge(
+                            helper_for_get_mods_by_courses::standard_coursemodule_elements_returns(),
                             [
                                 'id' => new external_value(PARAM_INT, 'activity id'),
                                 'url' => new external_value(PARAM_URL, 'activity url', VALUE_OPTIONAL),
@@ -606,7 +629,8 @@ class core_course_external extends external_api {
                                     'Contents summary information.',
                                     VALUE_OPTIONAL,
                                 ),
-                            ],
+                            ]
+                        )
                         ),
                         'list of modules',
                     ),
@@ -2957,6 +2981,17 @@ class core_course_external extends external_api {
         $warnings = array();
 
         $cm = get_coursemodule_from_id(null, $params['cmid'], 0, true, MUST_EXIST);
+
+        $course = get_course($cm->course);
+        $instances = get_all_instances_in_courses($cm->modname, [$course->id => $course], false);
+        $instance = null;
+        foreach ($instances as $ins) {
+            if ($ins->id == $cm->instance) {
+                $instance = $ins;
+                break;
+            }
+        }
+
         $context = context_module::instance($cm->id);
         self::validate_context($context);
 
@@ -3024,6 +3059,17 @@ class core_course_external extends external_api {
         }
         // Format name.
         $info->name = \core_external\util::format_string($cm->name, $context);
+        $info->coursemodule = $cm->id;
+        if ($instance && isset($instance->intro)) {
+            $info->intro = $instance->intro;
+            $info->introformat = $instance->introformat;
+        } else {
+            $info->intro = '';
+            $info->introformat = FORMAT_HTML;
+        }
+        if (property_exists($instance, 'introfiles')) {
+            $info->introfiles = $instance->introfiles;
+        }
         $result = array();
         $result['cm'] = $info;
         $result['warnings'] = $warnings;
@@ -3039,8 +3085,9 @@ class core_course_external extends external_api {
     public static function get_course_module_returns() {
         return new external_single_structure(
             array(
-                'cm' => new external_single_structure(
-                    array(
+                'cm' => new external_single_structure(array_merge(
+                    helper_for_get_mods_by_courses::standard_coursemodule_elements_returns(),
+                    [
                         'id' => new external_value(PARAM_INT, 'The course module id'),
                         'course' => new external_value(PARAM_INT, 'The course id'),
                         'module' => new external_value(PARAM_INT, 'The module type id'),
@@ -3089,7 +3136,8 @@ class core_course_external extends external_api {
                             ),
                             'Outcomes information', VALUE_OPTIONAL
                         ),
-                    )
+                    ]
+                )
                 ),
                 'warnings' => new external_warnings()
             )
