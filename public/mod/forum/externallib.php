@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use core_course\external\helper_for_get_mods_by_courses;
 use mod_forum\local\exporters\post as post_exporter;
 use mod_forum\local\exporters\discussion as discussion_exporter;
 use core_external\external_api;
@@ -130,7 +131,7 @@ class mod_forum_external extends external_api {
     /**
      * Describes the get_forum return value.
      *
-     * @return external_single_structure
+     * @return external_multiple_structure
      * @since Moodle 2.5
      */
     public static function get_forums_by_courses_returns() {
@@ -139,49 +140,66 @@ class mod_forum_external extends external_api {
         // Also, the return type declaration is wrong, but I am not changing it now because I don't want ot break things.
         return new external_multiple_structure(
             new external_single_structure(
-                [
-                    'id' => new external_value(PARAM_INT, 'Forum id'),
-                    'course' => new external_value(PARAM_INT, 'Course id'),
-                    'type' => new external_value(PARAM_TEXT, 'The forum type'),
-                    'name' => new external_value(PARAM_RAW, 'Forum name'),
-                    'intro' => new external_value(PARAM_RAW, 'The forum intro'),
-                    'introformat' => new external_format_value('intro'),
-                    'introfiles' => new external_files('Files in the introduction text', VALUE_OPTIONAL),
-                    'lang' => new external_value(PARAM_SAFEDIR, 'Forced activity language', VALUE_OPTIONAL),
-                    'duedate' => new external_value(PARAM_INT, 'duedate for the user', VALUE_OPTIONAL),
-                    'cutoffdate' => new external_value(PARAM_INT, 'cutoffdate for the user', VALUE_OPTIONAL),
-                    'assessed' => new external_value(PARAM_INT, 'Aggregate type'),
-                    'assesstimestart' => new external_value(PARAM_INT, 'Assess start time'),
-                    'assesstimefinish' => new external_value(PARAM_INT, 'Assess finish time'),
-                    'scale' => new external_value(PARAM_INT, 'Scale'),
-                    'grade_forum' => new external_value(PARAM_INT, 'Whole forum grade'),
-                    'grade_forum_notify' => new external_value(PARAM_INT, 'Whether to send notifications to students upon grading by default'),
-                    'maxbytes' => new external_value(PARAM_INT, 'Maximum attachment size'),
-                    'maxattachments' => new external_value(PARAM_INT, 'Maximum number of attachments'),
-                    'forcesubscribe' => new external_value(PARAM_INT, 'Force users to subscribe'),
-                    'trackingtype' => new external_value(PARAM_INT, 'Subscription mode'),
-                    'rsstype' => new external_value(PARAM_INT, 'RSS feed for this activity'),
-                    'rssarticles' => new external_value(PARAM_INT, 'Number of RSS recent articles'),
-                    'timemodified' => new external_value(PARAM_INT, 'Time modified'),
-                    'warnafter' => new external_value(PARAM_INT, 'Post threshold for warning'),
-                    'blockafter' => new external_value(PARAM_INT, 'Post threshold for blocking'),
-                    'blockperiod' => new external_value(PARAM_INT, 'Time period for blocking'),
-                    'completiondiscussions' => new external_value(PARAM_INT, 'Student must create discussions'),
-                    'completionreplies' => new external_value(PARAM_INT, 'Student must post replies'),
-                    'completionposts' => new external_value(PARAM_INT, 'Student must post discussions or replies'),
-                    'cmid' => new external_value(PARAM_INT, 'Course module id'),
-                    'numdiscussions' => new external_value(PARAM_INT, 'Number of discussions in the forum', VALUE_OPTIONAL),
-                    'cancreatediscussions' => new external_value(PARAM_BOOL, 'If the user can create discussions', VALUE_OPTIONAL),
-                    'lockdiscussionafter' => new external_value(PARAM_INT, 'After what period a discussion is locked', VALUE_OPTIONAL),
-                    'istracked' => new external_value(PARAM_BOOL, 'If the user is tracking the forum', VALUE_OPTIONAL),
-                    'unreadpostscount' => new external_value(PARAM_INT, 'The number of unread posts for tracked forums',
-                        VALUE_OPTIONAL),
-                    'showimmediately' => new external_value(
-                        PARAM_BOOL,
-                        'Whether to show replies immediately in a Q&A forum',
-                        VALUE_OPTIONAL
-                    ),
-                ],
+                array_merge(
+                    helper_for_get_mods_by_courses::standard_coursemodule_elements_returns(),
+                    [
+                        'id' => new external_value(PARAM_INT, 'Forum id'),
+                        'course' => new external_value(PARAM_INT, 'Course id'),
+                        'type' => new external_value(PARAM_TEXT, 'The forum type'),
+                        'name' => new external_value(PARAM_RAW, 'Forum name'),
+                        'intro' => new external_value(PARAM_RAW, 'The forum intro'),
+                        'introformat' => new external_format_value('intro'),
+                        'introfiles' => new external_files('Files in the introduction text', VALUE_OPTIONAL),
+                        'lang' => new external_value(PARAM_SAFEDIR, 'Forced activity language', VALUE_OPTIONAL),
+                        'duedate' => new external_value(PARAM_INT, 'duedate for the user', VALUE_OPTIONAL),
+                        'cutoffdate' => new external_value(PARAM_INT, 'cutoffdate for the user', VALUE_OPTIONAL),
+                        'assessed' => new external_value(PARAM_INT, 'Aggregate type'),
+                        'assesstimestart' => new external_value(PARAM_INT, 'Assess start time'),
+                        'assesstimefinish' => new external_value(PARAM_INT, 'Assess finish time'),
+                        'scale' => new external_value(PARAM_INT, 'Scale'),
+                        'grade_forum' => new external_value(PARAM_INT, 'Whole forum grade'),
+                        'grade_forum_notify' => new external_value(
+                            PARAM_INT,
+                            'Whether to send notifications to students upon grading by default'
+                        ),
+                        'maxbytes' => new external_value(PARAM_INT, 'Maximum attachment size'),
+                        'maxattachments' => new external_value(PARAM_INT, 'Maximum number of attachments'),
+                        'forcesubscribe' => new external_value(PARAM_INT, 'Force users to subscribe'),
+                        'trackingtype' => new external_value(PARAM_INT, 'Subscription mode'),
+                        'rsstype' => new external_value(PARAM_INT, 'RSS feed for this activity'),
+                        'rssarticles' => new external_value(PARAM_INT, 'Number of RSS recent articles'),
+                        'timemodified' => new external_value(PARAM_INT, 'Time modified'),
+                        'warnafter' => new external_value(PARAM_INT, 'Post threshold for warning'),
+                        'blockafter' => new external_value(PARAM_INT, 'Post threshold for blocking'),
+                        'blockperiod' => new external_value(PARAM_INT, 'Time period for blocking'),
+                        'completiondiscussions' => new external_value(PARAM_INT, 'Student must create discussions'),
+                        'completionreplies' => new external_value(PARAM_INT, 'Student must post replies'),
+                        'completionposts' => new external_value(PARAM_INT, 'Student must post discussions or replies'),
+                        'cmid' => new external_value(PARAM_INT, 'Course module id'),
+                        'numdiscussions' => new external_value(PARAM_INT, 'Number of discussions in the forum', VALUE_OPTIONAL),
+                        'cancreatediscussions' => new external_value(
+                            PARAM_BOOL,
+                            'If the user can create discussions',
+                            VALUE_OPTIONAL
+                        ),
+                        'lockdiscussionafter' => new external_value(
+                            PARAM_INT,
+                            'After what period a discussion is locked',
+                            VALUE_OPTIONAL
+                        ),
+                        'istracked' => new external_value(PARAM_BOOL, 'If the user is tracking the forum', VALUE_OPTIONAL),
+                        'unreadpostscount' => new external_value(
+                            PARAM_INT,
+                            'The number of unread posts for tracked forums',
+                            VALUE_OPTIONAL
+                        ),
+                        'showimmediately' => new external_value(
+                            PARAM_BOOL,
+                            'Whether to show replies immediately in a Q&A forum',
+                            VALUE_OPTIONAL
+                        ),
+                    ]
+                ),
                 'forum'
             )
         );
