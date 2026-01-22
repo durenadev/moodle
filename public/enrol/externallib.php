@@ -903,9 +903,19 @@ class core_enrol_external extends external_api {
         $users = [];
         foreach ($enrolledusers as $user) {
             context_helper::preload_from_record($user);
-            if ($userdetails = user_get_user_details($user, $course, $userfields)) {
-                $users[] = $userdetails;
+            $userdetails = user_get_user_details($user, $course, $userfields);
+            if (!$userdetails) {
+                $userdetails = [
+                    'id' => $user->id,
+                    'fullname' => fullname($user),
+                    'lastcourseaccess' => $user->lastcourseaccess,
+                ];
+                global $PAGE;
+                $userpicture = new user_picture($user);
+                $userpicture->size = 1;
+                $userdetails['profileimageurl'] = $userpicture->get_url($PAGE)->out(false);
             }
+            $users[] = $userdetails;
         }
         $enrolledusers->close();
 
