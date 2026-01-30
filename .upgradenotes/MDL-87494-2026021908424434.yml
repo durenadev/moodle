@@ -1,0 +1,7 @@
+issueNumber: MDL-87494
+notes:
+  tool_mobile:
+    - message: >-
+        Improve mobile app subscription page UI and add subscription cache
+        refresh task and application-level cache.
+      type: changed
