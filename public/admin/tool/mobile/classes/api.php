@@ -803,13 +803,13 @@ class api {
      *
      * @return array Subscription information
      */
-    public static function get_subscription_information(): ?array {
+    public static function get_subscription_information($usecache = true): ?array {
         global $CFG;
 
         // Use session cache to prevent multiple requests.
-        $cache = \cache::make('tool_mobile', 'subscriptiondata');
+        $cache = \cache::make('tool_mobile', 'subscriptioninfo');
         $subscriptiondata = $cache->get(0);
-        if ($subscriptiondata !== false) {
+        if ($usecache && $subscriptiondata !== false) {
             return $subscriptiondata;
         }
 

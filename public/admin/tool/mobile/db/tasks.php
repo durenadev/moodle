@@ -15,25 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Mobile cache definitions.
+ * Moodle Mobile tools tasks definitions.
+ *
  *
  * @package    tool_mobile
- * @copyright  2017 Skylar Kelty <S.Kelty@kent.ac.uk>
+ * @copyright  2026 Daniel Urena
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
-$definitions = array(
-    'plugininfo' => array(
-        'mode' => cache_store::MODE_APPLICATION,
-        'simplekeys' => true,
-        'staticacceleration' => true,
-        'staticaccelerationsize' => 1
-    ),
-    'subscriptioninfo' => array(
-        'mode' => cache_store::MODE_APPLICATION,
-        'simplekeys' => true,
-        'simpledata' => false,
-    ),
-);
+$tasks = [
+    [
+        'classname' => 'tool_mobile\task\refresh_subscription_cache',
+        'blocking' => 0,
+        // Run weekly on a random day and random time.
+        'minute' => 'R',
+        'hour' => 'R',
+        'day' => '*',
+        'dayofweek' => 'R',
+        'month' => '*',
+    ],
+];

@@ -32,12 +32,8 @@ admin_externalpage_setup('mobileappsubscription', '', null, '');
 if (!$CFG->enablemobilewebservice) {
     throw new \moodle_exception('enablewsdescription', 'webservice');
 }
-// Check is this feature is globaly disabled.
-if (!empty($CFG->disablemobileappsubscription)) {
-    throw new \moodle_exception('disabled', 'admin');
-}
 
-$subscriptiondata = \tool_mobile\api::get_subscription_information();
+$subscriptiondata = \tool_mobile\api::get_subscription_information(false);
 
 echo $OUTPUT->header();
 

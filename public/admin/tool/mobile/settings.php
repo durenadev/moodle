@@ -46,6 +46,37 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
         new admin_category('mobileapp', new lang_string('mobileapp', 'tool_mobile'), $ismobilewsdisabled),
         'development'
     );
+    // General notification about limited features due to app restrictions.
+    $subscriptionurl = (new moodle_url("/$CFG->admin/tool/mobile/subscription.php"))->out(false);
+    $notify = new \core\output\notification(
+        get_string('moodleappsportalfeatureswarning', 'tool_mobile', $subscriptionurl),
+        \core\output\notification::NOTIFY_WARNING);
+    $featuresnotice = $OUTPUT->render($notify);
+
+    $visiblename = (string) new lang_string('mobileappsubscription', 'tool_mobile');
+
+    $ispremiumplan = false;
+    $cache = \cache::make('tool_mobile', 'subscriptioninfo');
+    $subscriptiondata = $cache->get(0);
+    if (is_array($subscriptiondata) && !empty($subscriptiondata['subscription']['name'])) {
+        $planname = \core_text::strtolower(trim($subscriptiondata['subscription']['name']));
+        $ispremiumplan = ($planname === 'premium');
+    }
+    if (!$ispremiumplan) {
+        $visiblename .= ' 🚀 '.strtoupper(get_string('upgradeyourplan', 'tool_mobile'));
+    }
+
+    $ADMIN->add(
+        'mobileapp',
+        new admin_externalpage(
+            'mobileappsubscription',
+            $visiblename,
+            "$CFG->wwwroot/$CFG->admin/tool/mobile/subscription.php",
+            'moodle/site:configview',
+            $ismobilewsdisabled
+        )
+    );
+
 
     $temp = new admin_settingpage('mobilesettings',
         new lang_string('mobilesettings', 'tool_mobile'),
@@ -59,28 +90,6 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
     $ADMIN->add('mobileapp', $temp);
 
     $featuresnotice = null;
-    if (empty($CFG->disablemobileappsubscription)) {
-        // General notification about limited features due to app restrictions.
-        $subscriptionurl = (new moodle_url("/$CFG->admin/tool/mobile/subscription.php"))->out(false);
-        $notify = new \core\output\notification(
-            get_string('moodleappsportalfeatureswarning', 'tool_mobile', $subscriptionurl),
-            \core\output\notification::NOTIFY_WARNING);
-        $featuresnotice = $OUTPUT->render($notify);
-    }
-
-    $hideappsubscription = (isset($CFG->disablemobileappsubscription) && !empty($CFG->disablemobileappsubscription));
-    $hideappsubscription = $ismobilewsdisabled || $hideappsubscription;
-
-    $ADMIN->add(
-        'mobileapp',
-        new admin_externalpage(
-            'mobileappsubscription',
-            new lang_string('mobileappsubscription', 'tool_mobile'),
-            "$CFG->wwwroot/$CFG->admin/tool/mobile/subscription.php",
-            'moodle/site:configview',
-            $hideappsubscription
-        )
-    );
 
     // Type of login.
     $temp = new admin_settingpage(
