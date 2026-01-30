@@ -27,6 +27,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 use core_admin\local\settings\autocomplete;
+use tool_mobile\api;
+
 
 if ($hassiteconfig || has_capability('moodle/site:configview', context_system::instance())) {
     // We should wait to the installation to finish since we depend on some configuration values that are set once
@@ -46,41 +48,115 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
         new admin_category('mobileapp', new lang_string('mobileapp', 'tool_mobile'), $ismobilewsdisabled),
         'development'
     );
-
-    $temp = new admin_settingpage('mobilesettings',
-        new lang_string('mobilesettings', 'tool_mobile'),
-        'moodle/site:config',
-        $ismobilewsdisabled
+    // General notification about limited features due to app restrictions.
+    $subscriptionurl = (new moodle_url("/$CFG->admin/tool/mobile/subscription.php"))->out(false);
+    $notify = new \core\output\notification(
+        get_string('moodleappsportalfeatureswarning', 'tool_mobile', $subscriptionurl),
+        \core\output\notification::NOTIFY_WARNING
     );
+    $featuresnotice = $OUTPUT->render($notify);
 
-    $temp->add(new admin_setting_configtext('tool_mobile/apppolicy', new lang_string('apppolicy', 'tool_mobile'),
-        new lang_string('apppolicy_help', 'tool_mobile'), '', PARAM_URL));
+    $visiblename = (string) new lang_string('mobileappsubscription', 'tool_mobile');
 
-    $ADMIN->add('mobileapp', $temp);
-
-    $featuresnotice = null;
-    if (empty($CFG->disablemobileappsubscription)) {
-        // General notification about limited features due to app restrictions.
-        $subscriptionurl = (new moodle_url("/$CFG->admin/tool/mobile/subscription.php"))->out(false);
-        $notify = new \core\output\notification(
-            get_string('moodleappsportalfeatureswarning', 'tool_mobile', $subscriptionurl),
-            \core\output\notification::NOTIFY_WARNING);
-        $featuresnotice = $OUTPUT->render($notify);
+    $ispremiumplan = false;
+    $subscriptiondata = api::get_subscription_information();
+    if (is_array($subscriptiondata) && !empty($subscriptiondata['subscription']['plan'])) {
+        $plan = \core_text::strtolower(trim($subscriptiondata['subscription']['plan']));
+        $ispremiumplan = ($plan === 'premium' || $plan === 'bma');
     }
-
-    $hideappsubscription = (isset($CFG->disablemobileappsubscription) && !empty($CFG->disablemobileappsubscription));
-    $hideappsubscription = $ismobilewsdisabled || $hideappsubscription;
+    if (!$ispremiumplan) {
+        $visiblename .= ' 🚀 ' . strtoupper(get_string('upgradeyourplan', 'tool_mobile'));
+    }
 
     $ADMIN->add(
         'mobileapp',
         new admin_externalpage(
             'mobileappsubscription',
-            new lang_string('mobileappsubscription', 'tool_mobile'),
+            $visiblename,
             "$CFG->wwwroot/$CFG->admin/tool/mobile/subscription.php",
             'moodle/site:configview',
-            $hideappsubscription
+            $ismobilewsdisabled
         )
     );
+
+    // Features related settings.
+    $temp = new admin_settingpage(
+        'mobilefeatures',
+        new lang_string('mobilefeatures', 'tool_mobile'),
+        'moodle/site:config',
+        $ismobilewsdisabled
+    );
+
+    if (!empty($featuresnotice)) {
+        $temp->add(new admin_setting_heading('tool_mobile/moodleappsportalfeatures', '', $featuresnotice));
+    }
+
+    $temp->add(new admin_setting_heading('tool_mobile/logout',
+                new lang_string('logout'), ''));
+
+    $temp->add(new admin_setting_configcheckbox('tool_mobile/forcelogout',
+                new lang_string('forcelogout', 'tool_mobile'),
+                new lang_string('forcelogout_desc', 'tool_mobile'), 0));
+
+    $temp->add(new admin_setting_heading('tool_mobile/features',
+                new lang_string('mobilefeatures', 'tool_mobile'), ''));
+
+    $options = tool_mobile\api::get_features_list();
+    $temp->add(new admin_setting_configmultiselect('tool_mobile/disabledfeatures',
+                new lang_string('disabledfeatures', 'tool_mobile'),
+                new lang_string('disabledfeatures_desc', 'tool_mobile'), array(), $options));
+
+    $temp->add(new admin_setting_configtextarea(
+        'tool_mobile/custommenuitems',
+        new lang_string('custommenuitems', 'tool_mobile'),
+        new lang_string('custommenuitems_desc', 'tool_mobile'),
+        '',
+        PARAM_RAW,
+        '50',
+        '10',
+    ));
+
+    $temp->add(new admin_setting_configtextarea(
+        'tool_mobile/customusermenuitems',
+        new lang_string('customusermenuitems', 'tool_mobile'),
+        new lang_string('customusermenuitems_desc', 'tool_mobile'),
+        '',
+        PARAM_RAW,
+        '50',
+        '10',
+    ));
+
+    // File type exclusionlist.
+    $choices = [];
+    foreach (core_filetypes::get_types() as $key => $info) {
+        $text = '.' . $key;
+        if (!empty($info['type'])) {
+            $text .= ' (' . $info['type'] . ')';
+        }
+        $choices[$key] = $text;
+    }
+
+    $attributes = [
+        'manageurl' => new \moodle_url('/admin/tool/filetypes/index.php'),
+        'managetext' => get_string('managefiletypes', 'tool_mobile'),
+        'multiple' => true,
+        'delimiter' => ',',
+        'placeholder' => get_string('filetypeexclusionlistplaceholder', 'tool_mobile')
+    ];
+    $temp->add(new autocomplete('tool_mobile/filetypeexclusionlist',
+        new lang_string('filetypeexclusionlist', 'tool_mobile'),
+        new lang_string('filetypeexclusionlist_desc', 'tool_mobile'), array(), $choices, $attributes));
+
+    $temp->add(new admin_setting_heading('tool_mobile/language',
+                new lang_string('language'), ''));
+
+    $temp->add(new admin_setting_configtextarea('tool_mobile/customlangstrings',
+                new lang_string('customlangstrings', 'tool_mobile'),
+                new lang_string('customlangstrings_desc', 'tool_mobile'), '', PARAM_RAW, '50', '10'));
+
+    $ADMIN->add('mobileapp', $temp);
+
+    $featuresnotice = null;
 
     // Type of login.
     $temp = new admin_settingpage(
@@ -202,80 +278,14 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
 
     $ADMIN->add('mobileapp', $temp);
 
-    // Features related settings.
-    $temp = new admin_settingpage(
-        'mobilefeatures',
-        new lang_string('mobilefeatures', 'tool_mobile'),
+    $temp = new admin_settingpage('mobilesettings',
+        new lang_string('mobilesettings', 'tool_mobile'),
         'moodle/site:config',
         $ismobilewsdisabled
     );
 
-    if (!empty($featuresnotice)) {
-        $temp->add(new admin_setting_heading('tool_mobile/moodleappsportalfeatures', '', $featuresnotice));
-    }
-
-    $temp->add(new admin_setting_heading('tool_mobile/logout',
-                new lang_string('logout'), ''));
-
-    $temp->add(new admin_setting_configcheckbox('tool_mobile/forcelogout',
-                new lang_string('forcelogout', 'tool_mobile'),
-                new lang_string('forcelogout_desc', 'tool_mobile'), 0));
-
-    $temp->add(new admin_setting_heading('tool_mobile/features',
-                new lang_string('mobilefeatures', 'tool_mobile'), ''));
-
-    $options = tool_mobile\api::get_features_list();
-    $temp->add(new admin_setting_configmultiselect('tool_mobile/disabledfeatures',
-                new lang_string('disabledfeatures', 'tool_mobile'),
-                new lang_string('disabledfeatures_desc', 'tool_mobile'), array(), $options));
-
-    $temp->add(new admin_setting_configtextarea(
-        'tool_mobile/custommenuitems',
-        new lang_string('custommenuitems', 'tool_mobile'),
-        new lang_string('custommenuitems_desc', 'tool_mobile'),
-        '',
-        PARAM_RAW,
-        '50',
-        '10',
-    ));
-
-    $temp->add(new admin_setting_configtextarea(
-        'tool_mobile/customusermenuitems',
-        new lang_string('customusermenuitems', 'tool_mobile'),
-        new lang_string('customusermenuitems_desc', 'tool_mobile'),
-        '',
-        PARAM_RAW,
-        '50',
-        '10',
-    ));
-
-    // File type exclusionlist.
-    $choices = [];
-    foreach (core_filetypes::get_types() as $key => $info) {
-        $text = '.' . $key;
-        if (!empty($info['type'])) {
-            $text .= ' (' . $info['type'] . ')';
-        }
-        $choices[$key] = $text;
-    }
-
-    $attributes = [
-        'manageurl' => new \moodle_url('/admin/tool/filetypes/index.php'),
-        'managetext' => get_string('managefiletypes', 'tool_mobile'),
-        'multiple' => true,
-        'delimiter' => ',',
-        'placeholder' => get_string('filetypeexclusionlistplaceholder', 'tool_mobile')
-    ];
-    $temp->add(new autocomplete('tool_mobile/filetypeexclusionlist',
-        new lang_string('filetypeexclusionlist', 'tool_mobile'),
-        new lang_string('filetypeexclusionlist_desc', 'tool_mobile'), array(), $choices, $attributes));
-
-    $temp->add(new admin_setting_heading('tool_mobile/language',
-                new lang_string('language'), ''));
-
-    $temp->add(new admin_setting_configtextarea('tool_mobile/customlangstrings',
-                new lang_string('customlangstrings', 'tool_mobile'),
-                new lang_string('customlangstrings_desc', 'tool_mobile'), '', PARAM_RAW, '50', '10'));
+    $temp->add(new admin_setting_configtext('tool_mobile/apppolicy', new lang_string('apppolicy', 'tool_mobile'),
+        new lang_string('apppolicy_help', 'tool_mobile'), '', PARAM_URL));
 
     $ADMIN->add('mobileapp', $temp);
 }
