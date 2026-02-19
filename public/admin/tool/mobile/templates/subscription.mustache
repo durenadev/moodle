@@ -179,6 +179,9 @@
     <div class="d-flex align-items-center gap-3 mt-3 mb-3">
         <h3 class="fw-bold ml-2">{{name}}</h3>
         <span class="ml-2 badge fw-normal bg-secondary fs-6 text-dark">{{#str}} limitedfeatures, tool_mobile {{/str}}</span>
+        {{#messageoldcache}}
+        <span class="text-muted">({{{messageoldcache}}})</span>
+        {{/messageoldcache}}
     </div>
     {{#messageunregisteredsite}}
     {{> tool_mobile/subscribe_alert}}
@@ -191,6 +194,10 @@
             {{#expiretime}}
             <div class="ml-2 text-muted">
                 {{#str}} planexpireson, tool_mobile {{/str}}{{#userdate}} {{expiretime}}, {{#str}} strftimedatetimeshort {{/str}} {{/userdate}}
+                {{#messageoldcache}}
+                    ({{{messageoldcache}}})
+                {{/messageoldcache}}
+
             </div>
             {{/expiretime}}
         </div>

@@ -75,6 +75,12 @@ class subscription implements \renderable, \templatable {
             ];
             return $datanosub;
         }
+
+        $lastupdate = get_config('tool_mobile', 'subscriptioninfoupdated');
+        if (empty($lastupdate) || time() - $lastupdate > 10 * 24 * 3600) {
+            $data['messageoldcache'] = get_string('showingcacheddata', 'tool_mobile', \tool_mobile\api::MOODLE_APPS_PORTAL_URL);
+        }
+
         $data['appsportalurl'] = \tool_mobile\api::MOODLE_APPS_PORTAL_URL;
         $appsportalupgradeurl = new \moodle_url(\tool_mobile\api::MOODLE_APPS_PORTAL_URL, [
             'sitesecret' => md5(\core\hub\registration::get_secret()),
