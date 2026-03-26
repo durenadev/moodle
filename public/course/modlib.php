@@ -599,15 +599,16 @@ function can_add_moduleinfo($course, $modulename, $sectionnum) {
  * Check if user is allowed to update module info and returns related item/data to the module.
  *
  * @param object $cm course module
+ * @param string $capability capability required to access module info
  * @return array - list of course module, context, module, moduleinfo, and course section.
  * @throws moodle_exception if user is not allowed to perform the action
  */
-function can_update_moduleinfo($cm) {
+function can_update_moduleinfo($cm, $capability = 'moodle/course:manageactivities') {
     global $DB;
 
     // Check the $USER has the right capability.
     $context = context_module::instance($cm->id);
-    require_capability('moodle/course:manageactivities', $context);
+    require_capability($capability, $context);
 
     // Check module exists.
     $module = $DB->get_record('modules', array('id'=>$cm->module), '*', MUST_EXIST);
@@ -842,16 +843,17 @@ function include_modulelib($modulename): void {
 /**
  * Get module information data required for updating the module.
  *
- * @param  stdClass $cm     course module object
- * @param  stdClass $course course object
+ * @param  stdClass $cm         course module object
+ * @param  stdClass $course     course object
+ * @param  string   $capability capability required to access module info
  * @return array required data for updating a module
  * @since  Moodle 3.2
  */
-function get_moduleinfo_data($cm, $course) {
+function get_moduleinfo_data($cm, $course, $capability = 'moodle/course:manageactivities') {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
-    list($cm, $context, $module, $data, $cw) = can_update_moduleinfo($cm);
+    [$cm, $context, $module, $data, $cw] = can_update_moduleinfo($cm, $capability);
 
     $data->coursemodule       = $cm->id;
     $data->section            = $cw->section;  // The section number itself - relative!!! (section column in course_sections)
