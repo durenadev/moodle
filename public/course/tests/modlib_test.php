@@ -203,6 +203,44 @@ final class modlib_test extends \advanced_testcase {
 
         $this->assertEquals($expecteddata, $data);
 
+        $teacherrole = $DB->get_record('role', ['shortname' => 'teacher'], '*', MUST_EXIST);
+        role_change_permission(
+            $teacherrole->id,
+            \context_course::instance($course->id),
+            'moodle/grade:viewall',
+            CAP_ALLOW
+        );
+        role_change_permission(
+            $teacherrole->id,
+            \context_course::instance($course->id),
+            'moodle/course:manageactivities',
+            CAP_PROHIBIT
+        );
+
+        $grader = self::getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($grader->id, $course->id, 'teacher');
+        $this->setUser($grader);
+
+        $this->assertTrue(has_capability('moodle/grade:viewall', $assigncontext));
+        $this->assertFalse(has_capability('moodle/course:manageactivities', $assigncontext));
+
+        [$cm, $context, $module, $data, $cw] = get_moduleinfo_data($assigncm, $course, 'moodle/grade:viewall');
+        $this->assertEquals($assigncm, $cm);
+        $this->assertEquals($assigncontext, $context);
+        $this->assertEquals($assignmodule, $module);
+
+        unset($data->introeditor);
+        unset($data->_advancedgradingdata);
+
+        $this->assertEquals($expecteddata, $data);
+
+        try {
+            get_moduleinfo_data($assigncm, $course);
+            $this->fail('Exception expected due to missing manageactivities capability.');
+        } catch (\required_capability_exception $e) {
+            $this->assertEquals('nopermissions', $e->errorcode);
+        }
+
         // Create a viewer user. Not able to edit.
         $viewer = self::getDataGenerator()->create_user();
         $this->getDataGenerator()->enrol_user($viewer->id, $course->id);

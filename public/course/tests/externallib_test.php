@@ -2715,7 +2715,41 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
         // Make module visible.
         set_coursemodule_visible($assign->cmid, 1);
 
+        $teacherrole = $DB->get_record('role', ['shortname' => 'teacher'], '*', MUST_EXIST);
+        role_change_permission(
+            $teacherrole->id,
+            context_course::instance($course->id),
+            'moodle/grade:viewall',
+            CAP_ALLOW
+        );
+        role_change_permission(
+            $teacherrole->id,
+            context_course::instance($course->id),
+            'moodle/course:manageactivities',
+            CAP_PROHIBIT
+        );
+
+        $teacher = $this->getDataGenerator()->create_user();
+        self::getDataGenerator()->enrol_user($teacher->id, $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $assigncontext = context_module::instance($assign->cmid);
+        $this->assertTrue(has_capability('moodle/grade:viewall', $assigncontext));
+        $this->assertFalse(has_capability('moodle/course:manageactivities', $assigncontext));
+        $this->assertFalse(has_capability('moodle/grade:managegradingforms', $assigncontext));
+
+        $result = core_course_external::get_course_module($assign->cmid);
+        $result = external_api::clean_returnvalue(core_course_external::get_course_module_returns(), $result);
+
+        $this->assertCount(0, $result['warnings']);
+        $this->assertArrayHasKey('grade', $result['cm']);
+        $this->assertArrayNotHasKey('advancedgrading', $result['cm']);
+        $this->assertArrayHasKey('outcomes', $result['cm']);
+        $this->assertEquals(100, $result['cm']['grade']);
+        $this->assertEquals($outcomescale, $result['cm']['outcomes'][0]['scale']);
+
         // Test student user.
+        $this->setUser($student);
         $result = core_course_external::get_course_module($assign->cmid);
         $result = external_api::clean_returnvalue(core_course_external::get_course_module_returns(), $result);
 
@@ -2780,7 +2814,39 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
         // Make module visible.
         set_coursemodule_visible($quiz->cmid, 1);
 
+        $teacherrole = $DB->get_record('role', ['shortname' => 'teacher'], '*', MUST_EXIST);
+        role_change_permission(
+            $teacherrole->id,
+            context_course::instance($course->id),
+            'moodle/grade:viewall',
+            CAP_ALLOW
+        );
+        role_change_permission(
+            $teacherrole->id,
+            context_course::instance($course->id),
+            'moodle/course:manageactivities',
+            CAP_PROHIBIT
+        );
+
+        $teacher = $this->getDataGenerator()->create_user();
+        self::getDataGenerator()->enrol_user($teacher->id, $course->id, $teacherrole->id);
+        $this->setUser($teacher);
+
+        $quizcontext = context_module::instance($quiz->cmid);
+        $this->assertTrue(has_capability('moodle/grade:viewall', $quizcontext));
+        $this->assertFalse(has_capability('moodle/course:manageactivities', $quizcontext));
+
+        $result = core_course_external::get_course_module_by_instance('quiz', $quiz->id);
+        $result = external_api::clean_returnvalue(core_course_external::get_course_module_by_instance_returns(), $result);
+
+        $this->assertCount(0, $result['warnings']);
+        $this->assertArrayHasKey('grade', $result['cm']);
+        $this->assertArrayHasKey('idnumber', $result['cm']);
+        $this->assertEquals($record['grade'], $result['cm']['grade']);
+        $this->assertEquals($options['idnumber'], $result['cm']['idnumber']);
+
         // Test student user.
+        $this->setUser($student);
         $result = core_course_external::get_course_module_by_instance('quiz', $quiz->id);
         $result = external_api::clean_returnvalue(core_course_external::get_course_module_by_instance_returns(), $result);
 

@@ -2965,15 +2965,15 @@ class core_course_external extends external_api {
         $context = context_module::instance($cm->id);
         self::validate_context($context);
 
-        // If the user has permissions to manage the activity, return all the information.
-        if (has_capability('moodle/course:manageactivities', $context)) {
+        // If the user has permissions to view all grades, return all the information.
+        if (has_capability('moodle/grade:viewall', $context)) {
             require_once($CFG->dirroot . '/course/modlib.php');
             require_once($CFG->libdir . '/gradelib.php');
 
             $info = $cm;
             // Get the extra information: grade, advanced grading and outcomes data.
             $course = get_course($cm->course);
-            list($newcm, $newcontext, $module, $extrainfo, $cw) = get_moduleinfo_data($cm, $course);
+            [$newcm, $newcontext, $module, $extrainfo, $cw] = get_moduleinfo_data($cm, $course, 'moodle/grade:viewall');
             // Grades.
             $gradeinfo = array('grade', 'gradepass', 'gradecat');
             foreach ($gradeinfo as $gfield) {
