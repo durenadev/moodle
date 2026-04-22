@@ -259,6 +259,9 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
     if (!$ispremiumplan && isset($featureslimited['disabledfeatures'])) {
         $featureparams['limit'] = $featureslimited['disabledfeatures'];
         $featureparams['feature'] = strtolower($featurename);
+        if ($featureparams['limit'] == 1) {
+             $featureparams['feature'] = strtolower(get_string('disabledfeatures_singular', 'tool_mobile'));
+        }
         $templatesubscribe['message'] = clean_text(get_string('limiteddisabledfeature', 'tool_mobile', $featureparams));
 
         $temp->add(new admin_setting_heading(
@@ -328,6 +331,9 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
     if (!$ispremiumplan && isset($featureslimited['customlangstrings'])) {
         $featureparams['limit'] = $featureslimited['customlangstrings'];
         $featureparams['feature'] = strtolower($featurename);
+        if ($featureparams['limit'] == 1) {
+            $featureparams['feature'] = new lang_string('customlangstrings_singular', 'tool_mobile');
+        }
         $templatesubscribe['message'] = clean_text(get_string('limiteddisabledfeature', 'tool_mobile', $featureparams));
 
         $temp->add(new admin_setting_heading(

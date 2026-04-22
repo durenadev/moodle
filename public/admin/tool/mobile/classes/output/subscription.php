@@ -71,6 +71,7 @@ class subscription implements \renderable, \templatable {
             $datanosub['messagenosubscriptioninfo'][] = [
                 'message' => get_string('nosubsblocked', 'tool_mobile', $datanosub['appsportalurl']),
                 'title' => get_string('nosubswhyhappen', 'tool_mobile'),
+                'headinglevel' => 4,
                 'extraclasses' => 'mt-4 mb-0',
             ];
             return $datanosub;
