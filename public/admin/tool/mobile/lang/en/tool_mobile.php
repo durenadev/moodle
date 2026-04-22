@@ -47,6 +47,7 @@ $string['configmobilecssurl'] = 'A CSS file to customise your mobile app interfa
 $string['currentusage'] = 'Current usage';
 $string['customisation'] = 'Customisation';
 $string['customlangstrings'] = 'Custom language strings';
+$string['customlangstrings_singular'] = 'Custom language string';
 $string['customlangstrings_desc'] = 'Words and phrases displayed in the app can be customised here. Enter each custom language string on a new line with format: string identifier, custom language string and language code, separated by pipe characters. For example:
 <pre>
 core.user.student|Learner|en
@@ -84,6 +85,7 @@ You will only see this in English|https://someurl.xyz/english|browser|en_only
 $string['darkmode'] = 'Dark mode';
 $string['devicelimitnotrack'] = 'Per device limit (no usage tracking)';
 $string['disabledfeatures'] = 'Disabled features';
+$string['disabledfeatures_singular'] = 'Disabled feature';
 $string['disabledfeatures_desc'] = 'Select here the features you want to disable in the Mobile app for your site. Please note that some features listed here could be already disabled via other site settings. You will have to log out and log in again in the app to see the changes.';
 $string['displayerrorswarning'] = 'Display debug messages (debugdisplay) is enabled. It should be disabled.';
 $string['downloadcourse'] = 'Download course';
