@@ -65,4 +65,11 @@ if (!$user = get_complete_user_data('id', $user->id)) {
 complete_user_login($user);
 \core\session\manager::apply_concurrent_login_limit($user->id, session_id());
 
+// If the custom factor_mobile_autologin is enabled, store a short-lived
+// server-side validation bound to this authenticated session.
+if (get_config('factor_mobile_autologin', 'enabled') &&
+        class_exists('\\factor_mobile_autologin\\local\\autologin_validator')) {
+    \factor_mobile_autologin\local\autologin_validator::mark_validated((int)$user->id, session_id());
+}
+
 redirect($urltogo);
