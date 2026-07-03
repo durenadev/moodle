@@ -42,6 +42,22 @@ $string['billedannually'] = 'Billed annually';
 $string['branding'] = 'Branding';
 $string['cachedef_plugininfo'] = 'This stores the list of plugins with mobile addons';
 $string['cachedef_subscriptioninfo'] = 'This stores the Moodle app subscription information.';
+$string['checkpushnotificationlimitsbody'] = '{$a->heading}
+
+{$a->subheading}
+
+{$a->metriclabel}: {$a->ratiolabel}
+
+{$a->footer}';
+$string['checkpushnotificationlimitshtmlbutton'] = 'Upgrade your plan';
+$string['checkpushnotificationlimitshtmlfooter'] = 'New devices added over the limit will not receive push notifications.';
+$string['checkpushnotificationlimitshtmlheading'] = 'Your monthly device limit for push notifications has been reached';
+$string['checkpushnotificationlimitshtmllimitlabel'] = 'Limit reached';
+$string['checkpushnotificationlimitshtmlmetriclabel'] = 'Active devices for push notifications';
+$string['checkpushnotificationlimitshtmlmissedmultiple'] = '{$a} users have stopped receiving push notifications this month.';
+$string['checkpushnotificationlimitshtmlmissedsingle'] = '1 user has stopped receiving push notifications this month.';
+$string['checkpushnotificationlimitshtmlmissedzero'] = 'Additional users will not receive push notifications this month.';
+$string['checkpushnotificationlimitssubject'] = '🚨 Push notification device limit reached';
 $string['clickheretolaunchtheapp'] = 'Click here if the app does not open automatically.';
 $string['configmobilecssurl'] = 'A CSS file to customise your mobile app interface.';
 $string['currentusage'] = 'Current usage';
@@ -129,6 +145,8 @@ $string['lookingforqrcodelogin'] = 'Looking for QR code login?';
 $string['mainmenu'] = 'Main menu';
 $string['manage'] = 'Manage';
 $string['managefiletypes'] = 'Manage file types';
+$string['messageprovider:pushlimitreached'] = 'Push notification plan limit reached';
+$string['messageprovider:pushlimitreached_help'] = 'This notification is sent when the number of devices that can receive push notifications reaches its monthly limit. Once the limit is reached, push notifications will not be delivered to new devices until the next month, or until the plan is upgraded.';
 $string['minimumversion'] = 'If an app version is specified (3.8.0 or higher), any users using an older app version will be prompted to upgrade their app before being allowed access to the site.';
 $string['minimumversion_key'] = 'Minimum app version required';
 $string['mobileapp'] = 'Mobile app';
@@ -217,6 +235,7 @@ $string['subscriptionlimitsurpassed'] = 'Subscription limit exceeded';
 $string['subscriptionregister'] = 'For details of the various app plans, and to access Moodle app usage statistics, please visit the <a href="{$a}" target="_blank">Moodle Apps Portal</a>.';
 $string['subscriptionsseemore'] = 'Note: The information displayed is not updated in real time. You may need to log out and log in again to see updates. For information on upgrading your app plan, please log in to the <a href="{$a}" target="_blank">Moodle Apps Portal</a>.';
 $string['switchaccount'] = 'Switch account';
+$string['tasknotifypushnotificationlimittoadmins'] = 'Notify admins when mobile app push notification limit is reached';
 $string['taskrefreshsubscriptioncache'] = 'Refresh Moodle app subscription information cache';
 $string['typeoflogin'] = 'Type of login';
 $string['typeoflogin_desc'] = 'If the site uses a Single Sign-On (SSO) authentication method, then select via a browser window or via an embedded browser. An embedded browser provides a better user experience, though it doesn\'t work with all SSO plugins.';

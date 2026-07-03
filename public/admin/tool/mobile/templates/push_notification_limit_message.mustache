@@ -1,0 +1,81 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_mobile/push_notification_limit_message
+
+    Rich HTML notification shown when the mobile push notification device limit is reached.
+
+    Context variables required for this template:
+    * heading
+    * subheading
+    * metriclabel
+    * limitlabel
+    * footer
+    * buttonlabel
+    * buttonurl
+    * ratiolabel
+    * alerticonurl
+    * illustrationurl
+    * progresswidth
+
+    Example context (json):
+    {
+        "heading": "Your monthly device limit for push notifications has been reached",
+        "subheading": "New students aren't receiving push notifications from the Moodle app.",
+        "metriclabel": "Active devices for push notifications",
+        "limitlabel": "Limit reached",
+        "footer": "New devices added over the limit will not receive push notifications. 15 notifications were already not sent.",
+        "buttonlabel": "Upgrade your plan",
+        "buttonurl": "https://example.com/admin/tool/mobile/subscription.php",
+        "ratiolabel": "60 / 50",
+        "alerticonurl": "/pix/i/risk_xss.svg",
+        "illustrationurl": "/admin/tool/mobile/pix/push_notification.svg",
+        "progresswidth": 100
+    }
+}}
+<div class="tool-mobile-push-limit-card" style="font-family:-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,sans-serif;background:#fff;border:1px solid #e5e7eb;border-radius:18px;overflow:hidden;box-shadow:0 8px 24px rgba(15, 23, 42, 0.08);">
+    <div class="tool-mobile-push-limit-body" style="padding:28px 28px 24px 28px;background:#fff;">
+        <div class="tool-mobile-push-limit-main" style="display:flex;align-items:flex-start;gap:18px;">
+            <div class="tool-mobile-push-limit-copy" style="flex:1 1 auto;min-width:0;">
+                <div class="tool-mobile-push-limit-heading" style="display:flex;align-items:flex-start;font-size:16px;line-height:1.25;font-weight:600;color:#1f2328;margin:6px 0 8px 0;">
+                    <img class="tool-mobile-push-limit-alert-icon" src="{{alerticonurl}}" alt="" aria-hidden="true" style="display:block;width:16px;height:16px;flex:0 0 16px;margin:2px 6px 0 0;">
+                    <span style="display:block;flex:1 1 auto;">{{heading}}</span>
+                </div>
+                <div class="tool-mobile-push-limit-subheading" style="font-size:14px;line-height:1.5;color:#57606a;margin:0 0 14px 0;">{{subheading}}</div>
+                <div class="tool-mobile-push-limit-metric-row" style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:0 0 8px 0;">
+                    <div class="tool-mobile-push-limit-metric-label" style="display:flex;align-items:center;font-size:14px;line-height:1.4;font-weight:400;color:#1f2328;margin:0;flex:1 1 auto;padding-right:16px;">
+                        <span style="display:block;flex:1 1 auto;">{{metriclabel}}</span>
+                    </div>
+                    <div class="tool-mobile-push-limit-ratio" style="text-align:right;margin:0;flex:0 0 auto;">
+                        <span style="display:inline-block;background:#F4D6D2;color:#51140D;border-radius:999px;padding:6px 12px;font-size:14px;line-height:1;font-weight:500;">{{ratiolabel}}</span>
+                    </div>
+                </div>
+                <div class="tool-mobile-push-limit-progress" style="height:12px;background:#f3d1cb;border-radius:999px;overflow:hidden;margin:0 0 10px 0;">
+                    <div class="tool-mobile-push-limit-progress-fill" style="width:{{progresswidth}}%;height:100%;background:#d6402f;border-radius:999px;"></div>
+                </div>
+                <div class="tool-mobile-push-limit-limit-label" style="font-size:14px;line-height:1.4;font-weight:500;color:#d6402f;text-align:right;margin:0;">{{limitlabel}}</div>
+            </div>
+            <div class="tool-mobile-push-limit-device-illustration" style="flex:0 0 168px;max-width:168px;margin-left:28px;">
+                <img src="{{illustrationurl}}" alt="{{heading}}" style="display:block;width:100%;height:auto;border-radius:20px;">
+            </div>
+        </div>
+    </div>
+    <div class="tool-mobile-push-limit-footer" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px;background:#F8F9FA;border-top:1px solid #e5e7eb;">
+        <div class="tool-mobile-push-limit-footer-text" style="font-size:14px;line-height:1.5;color:#57606a;flex:1 1 auto;padding-right:16px;">{{footer}}</div>
+        <a href="{{buttonurl}}" style="display:inline-block;background:#0969da;color:#fff;text-decoration:none;padding:8px 10px;border-radius:12px;font-size:14px;line-height:1.2;font-weight:500;white-space:nowrap;">{{buttonlabel}}</a>
+    </div>
+</div>
