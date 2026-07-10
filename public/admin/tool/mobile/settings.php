@@ -48,6 +48,7 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
 
     // Getting information to prepare settings pages.
     $ispremiumplan = false;
+    $appsportalurl = (new \moodle_url(\tool_mobile\api::MOODLE_APPS_PORTAL_URL))->out(true);
     $subscriptiondata = api::get_subscription_information(true);
     if (is_array($subscriptiondata) && !empty($subscriptiondata['subscription']['plan'])) {
         $plan = \core_text::strtolower(trim($subscriptiondata['subscription']['plan']));
@@ -67,7 +68,6 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
         if (is_array($subscriptiondata) && !empty($subscriptiondata['subscription']['name'])) {
             $planname = $subscriptiondata['subscription']['name'];
         }
-        $appsportalurl = (new \moodle_url(\tool_mobile\api::MOODLE_APPS_PORTAL_URL))->out(true);
         $premiumfeaturesurl = (new moodle_url("/admin/settings.php", ['section' => 'premiumfeatures']))->out(true);
     }
     // Setting pages group.
@@ -144,6 +144,37 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
             $OUTPUT->render_from_template('tool_mobile/settings_alert', $templateheadersettings)
         ));
     }
+
+    $temp->add(new admin_setting_heading(
+        'tool_mobile/branding',
+        new lang_string('branding', 'tool_mobile'),
+        ''
+    ));
+
+    $brandingsettings = [];
+    if ($ispremiumplan) {
+        $brandingsettings = [
+            'link' => $appsportalurl, // o dependiendo de Juan -> (new \moodle_url(\tool_mobile\api::MOODLE_APPS_PORTAL_URL . '/local/apps/portal_login.php'))->out(true);
+        ];
+    } else {
+        $brandingsettings = [
+            'link' => (new \moodle_url("/admin/tool/mobile/subscription.php"))->out(true),
+            'learnmore' => 1,
+        ];
+    }
+    $temp->add(new admin_setting_heading(
+        'tool_mobile/brandingandcustomisation',
+        '',
+        $OUTPUT->render_from_template('tool_mobile/branding_customisation', $brandingsettings)
+    ));
+
+    $temp->add(new admin_setting_configtext(
+        'mobilecssurl',
+        new lang_string('mobilecssurl', 'tool_mobile'),
+        new lang_string('configmobilecssurl', 'tool_mobile'),
+        '',
+        PARAM_URL
+    ));
 
     $temp->add(new admin_setting_heading(
         'tool_mobile/authentication',
@@ -226,20 +257,6 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
             $OUTPUT->render_from_template('tool_mobile/subscribe_alert', $templatesubscribe)
         ));
     }
-
-    $temp->add(new admin_setting_heading(
-        'tool_mobile/branding',
-        new lang_string('branding', 'tool_mobile'),
-        ''
-    ));
-
-    $temp->add(new admin_setting_configtext(
-        'mobilecssurl',
-        new lang_string('mobilecssurl', 'tool_mobile'),
-        new lang_string('configmobilecssurl', 'tool_mobile'),
-        '',
-        PARAM_URL
-    ));
 
     $temp->add(new admin_setting_heading(
         'tool_mobile/customisation',
