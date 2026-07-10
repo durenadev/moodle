@@ -25,6 +25,35 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
+ * Check whether the current or provided subscription data belongs to a Premium or BMA plan.
+ *
+ * If the provided data is missing or malformed, cached subscription information is requested.
+ *
+ * @param ?array $subscriptiondata Optional subscription information returned by the Apps Portal API.
+ * @param bool $loadfromapi Whether the function should request cached API data if the provided data is void or invalid.
+ * @return bool
+ */
+function tool_mobile_is_premium_or_bma_plan(?array $subscriptiondata = null, bool $loadfromapi = true): bool {
+    if (
+        !is_array($subscriptiondata) ||
+        empty($subscriptiondata['subscription']) ||
+        !is_array($subscriptiondata['subscription']) ||
+        empty($subscriptiondata['subscription']['plan']) ||
+        !is_string($subscriptiondata['subscription']['plan'])
+    ) {
+        if (!$loadfromapi) {
+            return false;
+        }
+        $subscriptiondata = \tool_mobile\api::get_subscription_information(true);
+        return tool_mobile_is_premium_or_bma_plan($subscriptiondata, false);
+    }
+
+    $plan = \core_text::strtolower(trim($subscriptiondata['subscription']['plan']));
+
+    return $plan === 'premium' || $plan === 'bma';
+}
+
+/**
  * Generate the app download url to promote moodle mobile.
  *
  * @return moodle_url|void App download moodle_url object or return if setuplink is not set.

@@ -1,0 +1,139 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_mobile/branding_customisation
+
+    Branding and customisation preview block for the Mobile tool settings.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * link Optional URL displayed below the preview.
+
+    Example context (json):
+    {
+        "link": "https://apps.moodle.com",
+        "learnmore": 1
+    }
+}}
+<div class="form-item row" id="admin-mobilecssurl">
+    <div class="form-label col-sm-3 text-sm-end">
+        <div>
+            {{#str}} brandingandcustomisation, tool_mobile {{/str}}
+        </div>
+    </div>
+    <div class="form-setting col-sm-9">
+        <div class="form-text mt-2">
+            <div class="row g-4">
+                <div class="col-12 col-lg-8 col-xl-6 text-center mb-3">
+                    <div class="tool-mobile-branding-preview-wrapper">
+                        <div class="rounded overflow-hidden border">
+                            {{> tool_mobile/branding_preview_customisation}}
+                        </div>
+
+                        {{#learnmore}}
+                        <div class="mt-1 small text-muted">
+                            {{#str}} brandingbrandcoloursacrosstheapp, tool_mobile {{/str}}
+                            <a href="{{link}}" rel="noopener noreferrer"
+                                aria-label="{{#str}} brandingbrandcoloursacrosstheapplearnmore, tool_mobile {{/str}}">
+                                {{#str}} learnmore, tool_mobile {{/str}}
+                            </a>
+                        </div>
+                        {{/learnmore}}
+                        {{^learnmore}}
+                        <div class="mt-1 small">
+                            <a href="{{link}}" rel="noopener noreferrer" target="_blank"
+                                aria-label="{{#str}} brandinginappsportal, tool_mobile {{/str}} ({{#str}} opensinnewwindow, core {{/str}})">
+                                {{#str}} brandinginappsportal, tool_mobile {{/str}}
+                                <i class="fa fa-external-link pl-1" role="img" aria-label="{{#str}} opensinnewwindow, core {{/str}}"
+                                    title="{{#str}} opensinnewwindow, core {{/str}}">
+                                </i>
+                            </a>
+                        </div>
+                        {{/learnmore}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#js}}
+(function() {
+    var styleid = 'tool-mobile-branding-preview-styles';
+    if (document.getElementById(styleid)) {
+        return;
+    }
+
+    var style = document.createElement('style');
+    style.id = styleid;
+    style.textContent = '.tool-mobile-branding-preview {' +
+        'background:#ececed;' +
+        '--tool-mobile-branding-preview-cycle:4.5s;' +
+        '--tool-mobile-branding-preview-unit:clamp(0.84px, 0.07vw + 0.62px, 1px);' +
+        'padding:calc(16 * var(--tool-mobile-branding-preview-unit)) calc(28 * var(--tool-mobile-branding-preview-unit)) calc(16 * var(--tool-mobile-branding-preview-unit)) calc(16 * var(--tool-mobile-branding-preview-unit));' +
+        'display:flex;align-items:center;justify-content:center;gap:calc(28 * var(--tool-mobile-branding-preview-unit));overflow:visible;' +
+        'font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;}' +
+        '.tool-mobile-branding-preview_scene {min-height:calc(320 * var(--tool-mobile-branding-preview-unit));display:flex;align-items:center;justify-content:center;flex-wrap:nowrap;gap:calc(20 * var(--tool-mobile-branding-preview-unit));overflow:visible;}' +
+        '.tool-mobile-branding-preview_picker {width:calc(153 * var(--tool-mobile-branding-preview-unit));background:#fff;border-radius:calc(16 * var(--tool-mobile-branding-preview-unit));box-shadow:0 calc(12 * var(--tool-mobile-branding-preview-unit)) calc(32 * var(--tool-mobile-branding-preview-unit)) rgba(0, 0, 0, 0.12);padding:calc(20 * var(--tool-mobile-branding-preview-unit));display:flex;flex-direction:column;gap:calc(18 * var(--tool-mobile-branding-preview-unit));}' +
+        '.tool-mobile-branding-preview_row {display:flex;align-items:center;justify-content:space-between;}' +
+        '.tool-mobile-branding-preview_pill {height:calc(11 * var(--tool-mobile-branding-preview-unit));background:#e3e3e6;border-radius:999px;}' +
+        '.tool-mobile-branding-preview_pill--wide {width:55%;}' +
+        '.tool-mobile-branding-preview_pill--mid {width:40%;}' +
+        '.tool-mobile-branding-preview_pill--small {width:20%;}' +
+        '.tool-mobile-branding-preview_dot {width:calc(22 * var(--tool-mobile-branding-preview-unit));height:calc(22 * var(--tool-mobile-branding-preview-unit));border-radius:calc(8 * var(--tool-mobile-branding-preview-unit));animation:tool-mobile-branding-preview-pickercolour var(--tool-mobile-branding-preview-cycle) linear infinite;animation-play-state:paused;}' +
+        '.tool-mobile-branding-preview_swatches {display:flex;gap:calc(9 * var(--tool-mobile-branding-preview-unit));}' +
+        '.tool-mobile-branding-preview_swatch {width:calc(25 * var(--tool-mobile-branding-preview-unit));height:calc(25 * var(--tool-mobile-branding-preview-unit));border-radius:50%;position:relative;}' +
+        '.tool-mobile-branding-preview_swatch--a {background:#3cb878;}' +
+        '.tool-mobile-branding-preview_swatch--b {background:#f98012;}' +
+        '.tool-mobile-branding-preview_swatch--c {background:#5a48d8;}' +
+        '.tool-mobile-branding-preview_swatch::after {content:"";position:absolute;inset:calc(-6 * var(--tool-mobile-branding-preview-unit));border:calc(3 * var(--tool-mobile-branding-preview-unit)) solid #b9b9f0;border-radius:50%;opacity:0;animation:tool-mobile-branding-preview-ring var(--tool-mobile-branding-preview-cycle) linear infinite;animation-play-state:paused;}' +
+        '.tool-mobile-branding-preview_swatch--a::after {animation-delay:1s;}' +
+        '.tool-mobile-branding-preview_swatch--c::after {animation-delay:2.2s;}' +
+        '.tool-mobile-branding-preview_swatch--b::after {animation-delay:3.3s;}' +
+        '.tool-mobile-branding-preview_gradient {height:calc(52 * var(--tool-mobile-branding-preview-unit));border-radius:calc(13 * var(--tool-mobile-branding-preview-unit));background:linear-gradient(135deg, #f98012, #ffc371, #3cb878, #38b6ff, #5a48d8);position:relative;}' +
+        '.tool-mobile-branding-preview_cursor {position:absolute;top:calc(16 * var(--tool-mobile-branding-preview-unit));left:40%;width:calc(18 * var(--tool-mobile-branding-preview-unit));height:calc(18 * var(--tool-mobile-branding-preview-unit));border:calc(4 * var(--tool-mobile-branding-preview-unit)) solid #fff;border-radius:50%;box-shadow:0 calc(3 * var(--tool-mobile-branding-preview-unit)) calc(10 * var(--tool-mobile-branding-preview-unit)) rgba(0, 0, 0, 0.3);animation:tool-mobile-branding-preview-slide var(--tool-mobile-branding-preview-cycle) linear infinite;animation-play-state:paused;}' +
+        '.tool-mobile-branding-preview_phone {width:calc(135 * var(--tool-mobile-branding-preview-unit));background:#fff;border-radius:calc(20 * var(--tool-mobile-branding-preview-unit));box-shadow:0 0 0 calc(7 * var(--tool-mobile-branding-preview-unit)) #f7f7f8, 0 calc(18 * var(--tool-mobile-branding-preview-unit)) calc(44 * var(--tool-mobile-branding-preview-unit)) rgba(0, 0, 0, 0.14);overflow:hidden;display:flex;flex-direction:column;transform:translateY(calc(2 * var(--tool-mobile-branding-preview-unit)));}' +
+        '.tool-mobile-branding-preview_header {height:calc(61 * var(--tool-mobile-branding-preview-unit));display:flex;align-items:center;gap:calc(9 * var(--tool-mobile-branding-preview-unit));padding:0 calc(14 * var(--tool-mobile-branding-preview-unit));animation:tool-mobile-branding-preview-paintheader var(--tool-mobile-branding-preview-cycle) linear infinite;animation-play-state:paused;}' +
+        '.tool-mobile-branding-preview_header-pill {width:40%;height:calc(11 * var(--tool-mobile-branding-preview-unit));background:rgba(255, 255, 255, 0.85);border-radius:999px;}' +
+        '.tool-mobile-branding-preview_header-dot {width:calc(22 * var(--tool-mobile-branding-preview-unit));height:calc(22 * var(--tool-mobile-branding-preview-unit));border-radius:50%;background:rgba(255, 255, 255, 0.55);margin-left:auto;}' +
+        '.tool-mobile-branding-preview_list {padding:calc(14 * var(--tool-mobile-branding-preview-unit));display:flex;flex-direction:column;gap:calc(13 * var(--tool-mobile-branding-preview-unit));}' +
+        '.tool-mobile-branding-preview_card {border:calc(1 * var(--tool-mobile-branding-preview-unit)) solid #ececef;border-radius:calc(11 * var(--tool-mobile-branding-preview-unit));padding:calc(13 * var(--tool-mobile-branding-preview-unit));display:flex;flex-direction:column;gap:calc(9 * var(--tool-mobile-branding-preview-unit));}' +
+        '.tool-mobile-branding-preview_card-pill {height:calc(9 * var(--tool-mobile-branding-preview-unit));background:#e3e3e6;border-radius:999px;width:70%;}' +
+        '.tool-mobile-branding-preview_card-pill--secondary {background:#efeff1;width:45%;}' +
+        '.tool-mobile-branding-preview_card-pill--secondary-short {width:35%;}' +
+        '.tool-mobile-branding-preview_card-pill--short {width:60%;}' +
+        '.tool-mobile-branding-preview_bar {height:calc(7 * var(--tool-mobile-branding-preview-unit));border-radius:999px;width:55%;animation:tool-mobile-branding-preview-paintbars var(--tool-mobile-branding-preview-cycle) linear infinite;animation-play-state:paused;}' +
+        '.tool-mobile-branding-preview_bar--short {width:40%;}' +
+        '.tool-mobile-branding-preview_button {margin:0 calc(14 * var(--tool-mobile-branding-preview-unit)) calc(14 * var(--tool-mobile-branding-preview-unit));height:calc(36 * var(--tool-mobile-branding-preview-unit));border-radius:calc(11 * var(--tool-mobile-branding-preview-unit));display:flex;align-items:center;justify-content:center;animation:tool-mobile-branding-preview-paintbtn var(--tool-mobile-branding-preview-cycle) linear infinite;animation-play-state:paused;}' +
+        '.tool-mobile-branding-preview_button-label {width:40%;height:calc(8 * var(--tool-mobile-branding-preview-unit));background:rgba(255, 255, 255, 0.9);border-radius:999px;}' +
+        '.tool-mobile-branding-preview:hover .tool-mobile-branding-preview_dot,.tool-mobile-branding-preview:hover .tool-mobile-branding-preview_swatch::after,.tool-mobile-branding-preview:hover .tool-mobile-branding-preview_cursor,.tool-mobile-branding-preview:hover .tool-mobile-branding-preview_header,.tool-mobile-branding-preview:hover .tool-mobile-branding-preview_bar,.tool-mobile-branding-preview:hover .tool-mobile-branding-preview_button,.tool-mobile-branding-preview-wrapper:focus-within .tool-mobile-branding-preview_dot,.tool-mobile-branding-preview-wrapper:focus-within .tool-mobile-branding-preview_swatch::after,.tool-mobile-branding-preview-wrapper:focus-within .tool-mobile-branding-preview_cursor,.tool-mobile-branding-preview-wrapper:focus-within .tool-mobile-branding-preview_header,.tool-mobile-branding-preview-wrapper:focus-within .tool-mobile-branding-preview_bar,.tool-mobile-branding-preview-wrapper:focus-within .tool-mobile-branding-preview_button {animation-play-state:running;}' +
+        '@keyframes tool-mobile-branding-preview-pickercolour {0%,20%{background-color:#c9c9ce;}24%,42%{background-color:#3cb878;}46%,64%{background-color:#5a48d8;}68%,95%{background-color:#f98012;}100%{background-color:#c9c9ce;}}' +
+        '@keyframes tool-mobile-branding-preview-ring {0%,22%{opacity:1;}31%,100%{opacity:0;}}' +
+        '@keyframes tool-mobile-branding-preview-slide {0%,20%{left:40%;opacity:0;}24%,42%{left:55%;opacity:1;}46%,64%{left:78%;}68%,94%{left:8%;opacity:1;}95%,100%{opacity:0;}}' +
+        '@keyframes tool-mobile-branding-preview-paintheader {0%,24%{background-color:#c9c9ce;}28%,97%{background-color:#3cb878;}100%{background-color:#c9c9ce;}}' +
+        '@keyframes tool-mobile-branding-preview-paintbars {0%,68%{background-color:#c9c9ce;}72%,97%{background-color:#f98012;}100%{background-color:#c9c9ce;}}' +
+        '@keyframes tool-mobile-branding-preview-paintbtn {0%,46%{background-color:#c9c9ce;}50%,97%{background-color:#5a48d8;}100%{background-color:#c9c9ce;}}' +
+        '@media (max-width: 767.98px) {.tool-mobile-branding-preview_phone {transform:none;}}' +
+        '@media (prefers-reduced-motion: reduce) {.tool-mobile-branding-preview_dot,.tool-mobile-branding-preview_swatch::after,.tool-mobile-branding-preview_cursor,.tool-mobile-branding-preview_header,.tool-mobile-branding-preview_bar,.tool-mobile-branding-preview_button {animation:none !important;}.tool-mobile-branding-preview_dot,.tool-mobile-branding-preview_header {background-color:#3cb878;}.tool-mobile-branding-preview_button {background-color:#5a48d8;}.tool-mobile-branding-preview_bar {background-color:#f98012;}.tool-mobile-branding-preview_swatch--a::after {opacity:1;}}';
+    document.head.appendChild(style);
+})();
+{{/js}}
