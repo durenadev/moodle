@@ -24,6 +24,7 @@
 
 require_once(__DIR__ . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/mobile/lib.php');
 
 $choose = optional_param('choose', '', PARAM_PLUGIN);
 $reset  = optional_param('reset', 0, PARAM_BOOL);
@@ -149,6 +150,16 @@ if (isset($data[$currentthemeindex])) {
 $renderable = new \core_admin\output\theme_selector($data, $definedinconfig);
 $renderer = $PAGE->get_renderer('core', 'admin');
 echo $renderer->theme_selector_list($renderable);
+
+if (!tool_mobile_is_premium_or_bma_plan()) {
+    echo $OUTPUT->render_from_template('tool_mobile/theme_selector_alert', [
+        'iconclass' => 'fa-solid fa-palette',
+        'title' => get_string('brandcolourscanappearapp', 'tool_mobile'),
+        'message' => get_string('brandcolourscanappearapp_desc', 'tool_mobile'),
+        'buttonstr' => get_string('learnmore', 'tool_mobile'),
+        'buttonurl' => (new moodle_url('/admin/tool/mobile/subscription.php'))->out(false),
+    ]);
+}
 
 // Show footer.
 echo $OUTPUT->footer();

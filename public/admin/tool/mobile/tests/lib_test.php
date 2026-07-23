@@ -25,6 +25,7 @@ namespace tool_mobile;
  * @covers \\tool_mobile_is_premium_or_bma_plan
  * @covers \\tool_mobile_contains_matomo_tracking
  * @covers \\tool_mobile_has_matomo_additional_html
+ * @covers \\tool_mobile_is_premium_or_bma_plan
  */
 final class lib_test extends \advanced_testcase {
     /**
@@ -109,5 +110,24 @@ final class lib_test extends \advanced_testcase {
         $CFG->additionalhtmlfooter = '';
 
         $this->assertFalse(\tool_mobile_has_matomo_additional_html());
+    }
+
+    /**
+     * Test Premium and BMA plan detection.
+     */
+    public function test_is_premium_or_bma_plan(): void {
+        $this->assertTrue(\tool_mobile_is_premium_or_bma_plan([
+            'subscription' => ['plan' => 'premium'],
+        ]));
+        $this->assertTrue(\tool_mobile_is_premium_or_bma_plan([
+            'subscription' => ['plan' => ' BMA '],
+        ]));
+        $this->assertFalse(\tool_mobile_is_premium_or_bma_plan([
+            'subscription' => ['plan' => 'free'],
+        ]));
+        $this->assertFalse(\tool_mobile_is_premium_or_bma_plan([
+            'subscription' => [],
+        ]));
+        $this->assertFalse(\tool_mobile_is_premium_or_bma_plan(null));
     }
 }
