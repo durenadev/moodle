@@ -1,0 +1,53 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_mobile/additional_html_alert
+
+    Additional HTML alert shown in the Additional HTML admin settings page.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * title Alert title.
+    * message Alert body.
+    * buttonstr Button text.
+    * buttonurl Button URL.
+
+    Example context (json):
+    {
+        "title": "Matomo can track the Moodle app too",
+        "message": "You have set up Matomo for your site. With a Premium plan, your Matomo instance can also track how learners use the Moodle app.",
+        "buttonstr": "Learn more",
+        "buttonurl": "https://example.com/admin/tool/mobile/subscription.php"
+    }
+}}
+<div class="card border-0 mb-4 tool_mobile-settings-alert">
+    <div class="card-body bg-primary bg-opacity-10 border rounded-4 py-4 px-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <i class="fa-solid fa-chart-line flex-shrink-0 text-primary fs-5" aria-hidden="true"></i>
+            <div class="fs-6 mb-0">{{title}}</div>
+        </div>
+            <div class="mb-3 small text-body">{{message}}</div>
+        {{#buttonstr}}
+        <a href="{{buttonurl}}" class="btn btn-primary">{{buttonstr}}</a>
+        {{/buttonstr}}
+    </div>
+</div>

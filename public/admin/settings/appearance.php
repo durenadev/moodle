@@ -297,6 +297,25 @@ if ($hassiteconfig or has_any_capability($capabilities, $systemcontext)) { // sp
     $ADMIN->add('appearance', $page);
 
     $temp = new admin_settingpage('additionalhtml', new lang_string('additionalhtml', 'admin'));
+    if (core_component::get_plugin_directory('tool', 'mobile')) {
+        require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/mobile/lib.php');
+        $ispremiumplan = tool_mobile_is_premium_or_bma_plan();
+        $hasmatomo = tool_mobile_has_matomo_additional_html();
+        if (!$ispremiumplan && $hasmatomo) {
+            $matomoalertcontext = [
+                'iconclass' => 'fa-solid fa-chart-line',
+                'title' => get_string('matomocantrackapp', 'tool_mobile'),
+                'message' => get_string('matomocantrackapp_desc', 'tool_mobile'),
+                'buttonstr' => get_string('learnmore', 'tool_mobile'),
+                'buttonurl' => (new moodle_url('/admin/tool/mobile/subscription.php'))->out(false),
+            ];
+            $temp->add(new admin_setting_heading(
+                'tool_mobile/matomocantrackapp_additionalhtml',
+                '',
+                $OUTPUT->render_from_template('tool_mobile/additional_html_alert', $matomoalertcontext)
+            ));
+        }
+    }
     $temp->add(new admin_setting_heading('additionalhtml_heading', new lang_string('additionalhtml_heading', 'admin'), new lang_string('additionalhtml_desc', 'admin')));
     $temp->add(new admin_setting_configtextarea('additionalhtmlhead', new lang_string('additionalhtmlhead', 'admin'), new lang_string('additionalhtmlhead_desc', 'admin'), '', PARAM_RAW));
     $temp->add(new admin_setting_configtextarea('additionalhtmltopofbody', new lang_string('additionalhtmltopofbody', 'admin'), new lang_string('additionalhtmltopofbody_desc', 'admin'), '', PARAM_RAW));
