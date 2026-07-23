@@ -1,0 +1,88 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_mobile/logo_animation
+
+    Embedded logo preview animation for system setting alerts.
+
+    Context variables required for this template:
+    * none
+
+    Example context (json):
+    {}
+}}
+<div class="tool-mobile-logo-preview" aria-hidden="true">
+    <div class="tool-mobile-logo-preview_phone">
+        <div class="tool-mobile-logo-preview_statusbar">
+            <div class="tool-mobile-logo-preview_notch"></div>
+            <div class="tool-mobile-logo-preview_statusicons">
+                <span class="tool-mobile-logo-preview_statusicon tool-mobile-logo-preview_statusicon--signal"></span>
+                <span class="tool-mobile-logo-preview_statusicon tool-mobile-logo-preview_statusicon--wifi"></span>
+                <span class="tool-mobile-logo-preview_statusicon tool-mobile-logo-preview_statusicon--battery"></span>
+            </div>
+        </div>
+
+        <div class="tool-mobile-logo-preview_navrow">
+            <div class="tool-mobile-logo-preview_navleft">
+                <i class="fa-solid fa-chevron-left tool-mobile-logo-preview_backarrow" aria-hidden="true"></i>
+                <div class="tool-mobile-logo-preview_navpill"></div>
+            </div>
+            <div class="tool-mobile-logo-preview_navicons">
+                <i class="fa-solid fa-gear" aria-hidden="true"></i>
+                <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+            </div>
+        </div>
+
+        <div class="tool-mobile-logo-preview_logowrap">
+            <div class="tool-mobile-logo-preview_logotile">
+                <div class="tool-mobile-logo-preview_brand tool-mobile-logo-preview_brand--a">
+                    <div class="tool-mobile-logo-preview_mountain"></div>
+                </div>
+                <div class="tool-mobile-logo-preview_brand tool-mobile-logo-preview_brand--b">
+                    <div class="tool-mobile-logo-preview_flower">
+                        <div class="tool-mobile-logo-preview_petal"></div>
+                        <div class="tool-mobile-logo-preview_petal"></div>
+                        <div class="tool-mobile-logo-preview_petal"></div>
+                        <div class="tool-mobile-logo-preview_petal"></div>
+                        <div class="tool-mobile-logo-preview_flowercentre"></div>
+                    </div>
+                </div>
+                <div class="tool-mobile-logo-preview_brand tool-mobile-logo-preview_brand--c">
+                    <div class="tool-mobile-logo-preview_orbit"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-mobile-logo-preview_titles">
+            <div class="tool-mobile-logo-preview_titlepill"></div>
+            <div class="tool-mobile-logo-preview_titlepill tool-mobile-logo-preview_titlepill--secondary"></div>
+        </div>
+
+        <div class="tool-mobile-logo-preview_form">
+            <div class="tool-mobile-logo-preview_field">
+                <div class="tool-mobile-logo-preview_fieldhint"></div>
+            </div>
+            <div class="tool-mobile-logo-preview_field">
+                <div class="tool-mobile-logo-preview_fieldhint tool-mobile-logo-preview_fieldhint--short"></div>
+                <i class="fa-solid fa-eye tool-mobile-logo-preview_eye" aria-hidden="true"></i>
+            </div>
+            <div class="tool-mobile-logo-preview_loginbtn">
+                <div class="tool-mobile-logo-preview_btnlabel"></div>
+            </div>
+        </div>
+    </div>
+</div>

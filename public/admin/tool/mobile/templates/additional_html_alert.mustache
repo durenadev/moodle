@@ -26,6 +26,7 @@
     * none
 
     Context variables required for this template:
+    * iconclass Font Awesome icon classes.
     * title Alert title.
     * message Alert body.
     * buttonstr Button text.
@@ -33,6 +34,7 @@
 
     Example context (json):
     {
+        "iconclass": "fa-solid fa-chart-line",
         "title": "Matomo can track the Moodle app too",
         "message": "You have set up Matomo for your site. With a Premium plan, your Matomo instance can also track how learners use the Moodle app.",
         "buttonstr": "Learn more",
@@ -42,7 +44,7 @@
 <div class="card border-0 mb-4 tool_mobile-settings-alert">
     <div class="card-body bg-primary bg-opacity-10 border rounded-4 py-4 px-4">
         <div class="d-flex align-items-center gap-3 mb-3">
-            <i class="fa-solid fa-chart-line flex-shrink-0 text-primary fs-5" aria-hidden="true"></i>
+            <i class="{{iconclass}} flex-shrink-0 text-primary fs-5" aria-hidden="true"></i>
             <div class="fs-6 mb-0">{{title}}</div>
         </div>
             <div class="mb-3 small text-body">{{message}}</div>

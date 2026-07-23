@@ -10,8 +10,32 @@ $capabilities = array(
 );
 
 if ($hassiteconfig or has_any_capability($capabilities, $systemcontext)) { // speedup for non-admins, add all caps used on this page
+
     // Logos section.
     $temp = new admin_settingpage('logos', new lang_string('logossettings', 'admin'));
+    if (core_component::get_plugin_directory('tool', 'mobile')) {
+        require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/mobile/lib.php');
+        $ispremiumplan = tool_mobile_is_premium_or_bma_plan();
+        if (
+            !$ispremiumplan &&
+            (!empty(get_config('core_admin', 'logo')) ||
+            !empty(get_config('core_admin', 'logocompact'))
+            )
+        ) {
+            $logoalertcontext = [
+                'iconclass' => 'fa-solid fa-mobile-screen-button',
+                'title' => get_string('logocanappearapp', 'tool_mobile'),
+                'message' => get_string('logocanappearapp_desc', 'tool_mobile'),
+                'buttonstr' => get_string('learnmore', 'tool_mobile'),
+                'buttonurl' => (new moodle_url('/admin/tool/mobile/subscription.php'))->out(false),
+            ];
+            $temp->add(new admin_setting_heading(
+                'tool_mobile/logocanappearapp',
+                '',
+                $OUTPUT->render_from_template('tool_mobile/setting_sistem_alert', $logoalertcontext)
+            ));
+        }
+    }
 
     // Logo file setting.
     $title = get_string('logo', 'admin');
