@@ -23,6 +23,8 @@ namespace tool_mobile;
  * @copyright  2026 Daniel Ureña <daniel.urena@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers \\tool_mobile_is_premium_or_bma_plan
+ * @covers \\tool_mobile_contains_matomo_tracking
+ * @covers \\tool_mobile_has_matomo_additional_html
  */
 final class lib_test extends \advanced_testcase {
     /**
@@ -54,5 +56,58 @@ final class lib_test extends \advanced_testcase {
         $this->assertTrue(\tool_mobile_is_premium_or_bma_plan([
             'subscription' => ['plan' => 123],
         ]));
+    }
+
+    /**
+     * Test Matomo detection against common identifiers.
+     */
+    public function test_contains_matomo_tracking(): void {
+        $samples = [
+            "var _paq = window._paq || [];",
+            '<script src="https://example.com/matomo.js"></script>',
+            '<img src="https://example.com/matomo.php?idsite=1">',
+            '<script src="https://example.com/piwik.js"></script>',
+            '<img src="https://example.com/piwik.php?idsite=1">',
+            'trackPageView',
+            'enableLinkTracking',
+            'setTrackerUrl',
+            'setSiteId',
+            'TRACKPAGEVIEW',
+        ];
+
+        foreach ($samples as $sample) {
+            $this->assertTrue(\tool_mobile_contains_matomo_tracking($sample));
+        }
+
+        $this->assertFalse(\tool_mobile_contains_matomo_tracking('Google Analytics content only'));
+        $this->assertFalse(\tool_mobile_contains_matomo_tracking(''));
+        $this->assertFalse(\tool_mobile_contains_matomo_tracking(null));
+    }
+
+    /**
+     * Test Matomo detection in the Additional HTML settings.
+     */
+    public function test_has_matomo_additional_html(): void {
+        global $CFG;
+
+        $this->resetAfterTest(true);
+
+        set_config('additionalhtmlhead', '<script>console.log("no matomo")</script>');
+        set_config('additionalhtmltopofbody', '<script>var _paq = window._paq || [];</script>');
+        set_config('additionalhtmlfooter', '');
+        $CFG->additionalhtmlhead = '<script>console.log("no matomo")</script>';
+        $CFG->additionalhtmltopofbody = '<script>var _paq = window._paq || [];</script>';
+        $CFG->additionalhtmlfooter = '';
+
+        $this->assertTrue(\tool_mobile_has_matomo_additional_html());
+
+        set_config('additionalhtmlhead', '');
+        set_config('additionalhtmltopofbody', '');
+        set_config('additionalhtmlfooter', '');
+        $CFG->additionalhtmlhead = '';
+        $CFG->additionalhtmltopofbody = '';
+        $CFG->additionalhtmlfooter = '';
+
+        $this->assertFalse(\tool_mobile_has_matomo_additional_html());
     }
 }

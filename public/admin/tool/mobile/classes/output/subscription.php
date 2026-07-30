@@ -158,6 +158,14 @@ class subscription implements \renderable, \templatable {
             $data['subscription']['ispremium'] =
                 ($data['subscription']['plan'] === 'premium' || $data['subscription']['plan'] === 'bma');
         }
+        if (!empty($data['subscription']['isfree'])) {
+            if (tool_mobile_has_matomo_additional_html()) {
+                $data['morecurrentsetup']['matomoinapp'] = 1;
+            }
+            if (!empty(get_config('core_admin', 'logo')) || !empty(get_config('core_admin', 'logocompact'))) {
+                $data['morecurrentsetup']['logoinapp'] = 1;
+            }
+        }
 
         if (!empty($data['subscription']['expiretime'])) {
             $expiretimeshort = userdate(

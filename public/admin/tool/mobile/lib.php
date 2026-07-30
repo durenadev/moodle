@@ -54,6 +54,46 @@ function tool_mobile_is_premium_or_bma_plan(?array $subscriptiondata = null, boo
 }
 
 /**
+ * Check whether the provided HTML content contains Matomo tracking code.
+ *
+ * @param ?string $content HTML content to inspect.
+ * @return bool
+ */
+function tool_mobile_contains_matomo_tracking(?string $content): bool {
+    if (empty($content)) {
+        return false;
+    }
+
+    $pattern = '/(_paq|matomo\.(?:js|php)|piwik\.(?:js|php)|trackPageView|enableLinkTracking|setTrackerUrl|setSiteId)/i';
+
+    return preg_match($pattern, $content) === 1;
+}
+
+/**
+ * Check whether Matomo is configured in the Additional HTML settings.
+ *
+ * @return bool
+ */
+function tool_mobile_has_matomo_additional_html(): bool {
+    global $CFG;
+
+    $settings = [
+        'additionalhtmlhead',
+        'additionalhtmltopofbody',
+        'additionalhtmlfooter',
+    ];
+
+    foreach ($settings as $settingname) {
+        $content = $CFG->{$settingname} ?? null;
+        if (tool_mobile_contains_matomo_tracking($content)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
  * Generate the app download url to promote moodle mobile.
  *
  * @return moodle_url|void App download moodle_url object or return if setuplink is not set.
