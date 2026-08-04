@@ -45,7 +45,7 @@ class theme_boost_admin_settingspage_tabs extends admin_settingpage {
         return true;
     }
 
-    public function add($tab) {
+    public function add($tab, ?string $beforesibling = null) {
         return $this->add_tab($tab);
     }
 

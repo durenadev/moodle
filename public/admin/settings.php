@@ -7,11 +7,6 @@ $section = required_param('section', PARAM_SAFEDIR);
 $return = optional_param('return','', PARAM_ALPHA);
 $adminediting = optional_param('adminedit', -1, PARAM_BOOL);
 
-// Allow plugins to add contextual HTML content before this settings page is displayed.
-$hook = new \core_admin\hook\before_admin_settings_page_display($section);
-\core\di::get(\core\hook\manager::class)->dispatch($hook);
-$hookoutput = $hook->get_output();
-
 /// no guest autologin
 require_login(0, false);
 $PAGE->set_context(context_system::instance());
@@ -116,7 +111,6 @@ if (empty($SITE->fullname)) {
         'return' => $return,
         'title' => null,
         'settings' => $settingspage->output_html(),
-        'hookoutput' => $hookoutput,
         'showsave' => true
     ];
 
@@ -162,7 +156,6 @@ if (empty($SITE->fullname)) {
         'return' => $return,
         'title' => $settingspage->visiblename,
         'settings' => $settingspage->output_html(),
-        'hookoutput' => $hookoutput,
         'showsave' => $settingspage->show_save()
     ];
 

@@ -25,7 +25,6 @@
     * return - page to return to
     * title - form title
     * settings - raw html for settings
-    * hookoutput - raw html contributed by plugins via the before_admin_settings_page_display hook
     * showsave - true if we need save buttons
 
     Example context (json):
@@ -34,7 +33,6 @@
         "return": "/",
         "title": "Settings Form",
         "settings": "RAW HTML",
-        "hookoutput": "",
         "showsave": true
     }
 }}
@@ -52,7 +50,6 @@
         {{#title}}
             <h2>{{title}}</h2>
         {{/title}}
-        {{{hookoutput}}}
         {{{settings}}}
         {{#showsave}}
             <div class="row">

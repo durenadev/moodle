@@ -17,7 +17,6 @@
 namespace tool_mobile;
 
 use core\hook\output\extend_url;
-use core\output\mustache_engine;
 use html_writer;
 use moodle_url;
 use tool_mobile\local\hooks\before_extend_ios_app_banner;
@@ -119,94 +118,5 @@ class hook_callbacks {
                 $SESSION->wantsurl = (new \moodle_url("/$CFG->admin/tool/mobile/launch.php", $params))->out(false);
             }
         }
-    }
-
-    /**
-     * Callback to add contextual Premium mobile app content to admin settings pages.
-     *
-     * TODO: placeholder content only, for the Logo settings page. Will be replaced with the real
-     * Premium mobile app promotion and extended to the other target settings pages.
-     *
-     * @param \core_admin\hook\before_admin_settings_page_display $hook
-     */
-    public static function before_admin_settings_page_display(
-        \core_admin\hook\before_admin_settings_page_display $hook,
-    ): void {
-        global $CFG;
-        require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/mobile/lib.php');
-
-        if ($hook->section == 'logos') {
-            $ispremiumplan = tool_mobile_is_premium_or_bma_plan();
-            $haslogos = !empty(get_config('core_admin', 'logo')) || !empty(get_config('core_admin', 'logocompact'));
-            if (!$ispremiumplan && $haslogos) {
-                $logobannercontext = [
-                    'iconclass' => 'fa-solid fa-mobile-screen-button',
-                    'title' => get_string('logocanappearapp', 'tool_mobile'),
-                    'message' => get_string('logocanappearapp_desc', 'tool_mobile'),
-                    'buttonstr' => get_string('learnmore', 'tool_mobile'),
-                    'buttonurl' => (new moodle_url('/admin/tool/mobile/subscription.php'))->out(false),
-                    'animation' => 1,
-                    'animationtemplatelogo' => 1,
-                ];
-                $hook->add_html(self::render_template('tool_mobile/feature_banner', $logobannercontext));
-            }
-        } else if ($hook->section == 'additionalhtml') {
-            $ispremiumplan = tool_mobile_is_premium_or_bma_plan();
-            $hasmatomo = tool_mobile_has_matomo_additional_html();
-            if (!$ispremiumplan && $hasmatomo) {
-                $matomoalertcontext = [
-                    'iconclass' => 'fa-solid fa-chart-line',
-                    'title' => get_string('matomocantrackapp', 'tool_mobile'),
-                    'message' => get_string('matomocantrackapp_desc', 'tool_mobile'),
-                    'buttonstr' => get_string('learnmore', 'tool_mobile'),
-                    'buttonurl' => (new moodle_url('/admin/tool/mobile/subscription.php'))->out(false),
-                ];
-                $hook->add_html(self::render_template('tool_mobile/feature_banner', $matomoalertcontext));
-            }
-        }
-        return;
-    }
-
-    /**
-     * Render a Mustache template without relying on the page renderer.
-     *
-     * This is safe for early hooks where $PAGE context may not yet be initialised.
-     *
-     * @param string $template
-     * @param array $context
-     * @return string
-     */
-    protected static function render_template(string $template, array $context): string {
-        $loader = new class implements \Mustache\Loader {
-            /**
-             * Load a template source directly from the component template directory.
-             *
-             * @param string $name
-             * @return string
-             */
-            public function load($name) {
-                if (strpos($name, '/') === false) {
-                    throw new \Mustache\Exception\UnknownTemplateException($name);
-                }
-
-                [$component, $templatename] = explode('/', $name, 2);
-                $componentdir = \core_component::get_component_directory($component);
-                $filepath = $componentdir . '/templates/' . $templatename . '.mustache';
-
-                if (!$componentdir || !is_readable($filepath)) {
-                    throw new \Mustache\Exception\UnknownTemplateException($name);
-                }
-
-                return file_get_contents($filepath);
-            }
-        };
-
-        $mustache = new mustache_engine([
-            'escape' => 's',
-            'loader' => $loader,
-            'partials_loader' => $loader,
-        ]);
-
-        return trim($mustache->loadTemplate($template)->render($context));
     }
 }

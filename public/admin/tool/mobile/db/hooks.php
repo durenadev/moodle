@@ -44,8 +44,4 @@ $callbacks = [
         'callback' => 'tool_mobile\local\hooks\user\after_user_passed_mfa::callback',
         'priority' => 500,
     ],
-    [
-        'hook' => \core_admin\hook\before_admin_settings_page_display::class,
-        'callback' => [\tool_mobile\hook_callbacks::class, 'before_admin_settings_page_display'],
-    ],
 ];
