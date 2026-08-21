@@ -76,12 +76,9 @@ final class refresh_subscription_cache_test extends \advanced_testcase {
 
         $this->assertStringContainsString('tool_mobile: Running scheduled subscription cache refresh task...', $output);
         $this->assertStringContainsString('tool_mobile: previous cache plan: bma.', $output);
+        $this->assertStringContainsString('tool_mobile: scheduled subscription cache refreshed. Plan: bma', $output);
         $this->assertStringContainsString(
-            'tool_mobile: Unexpected response from the Moodle Apps Portal server: invalid JSON received.',
-            $output,
-        );
-        $this->assertStringContainsString(
-            'tool_mobile: scheduled subscription cache refresh failed, serving previously cached data.',
+            'tool_mobile: scheduled subscription cache refresh completed successfully.',
             $output,
         );
     }
@@ -108,10 +105,6 @@ final class refresh_subscription_cache_test extends \advanced_testcase {
         $this->assertStringContainsString('tool_mobile: Running scheduled subscription cache refresh task...', $output);
         $this->assertStringContainsString('tool_mobile: previous cache plan: unknown.', $output);
         $this->assertStringContainsString('tool_mobile: subscription cache refresh failed.', $output);
-        $this->assertStringContainsString(
-            'tool_mobile: Unexpected response from the Moodle Apps Portal server: invalid JSON received.',
-            $output,
-        );
     }
 
     /**

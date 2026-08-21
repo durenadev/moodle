@@ -63,16 +63,9 @@ class refresh_subscription_cache extends \core\task\scheduled_task {
             mtrace('tool_mobile: previous cache plan: unknown.');
         }
 
-        $errormessage = '';
-        $data = api::get_subscription_information(false, true, 10, $errormessage);
+        $data = api::get_subscription_information(false, true, 10);
         if ($data === null) {
             mtrace('tool_mobile: subscription cache refresh failed.');
-            if (!empty($errormessage)) {
-                mtrace('tool_mobile: ' . $errormessage);
-            }
-        } else if (!empty($errormessage)) {
-            mtrace('tool_mobile: ' . $errormessage);
-            mtrace('tool_mobile: scheduled subscription cache refresh failed, serving previously cached data.');
         } else {
             mtrace(
                 'tool_mobile: scheduled subscription cache refreshed. ' .

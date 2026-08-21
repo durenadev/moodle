@@ -896,19 +896,10 @@ class api {
      * @param bool $forcecache If true, return only cached data. Has priority over $ignorecache.
      * @param bool $ignorecache If true, ignore cached data and request information from the Application Portal.
      * @param int $timeout Time in seconds to wait for the Apps Portal response before giving up. Defaults to 10 seconds.
-     * @param string $errormessage Output parameter: set to the error that occurred while contacting the Apps
-     *     Portal, or left as an empty string when the request succeeded (or cache was used without contacting it).
      * @return array|null Subscription information, or null if it could not be retrieved and no cached fallback is available.
      */
-    public static function get_subscription_information(
-        $forcecache = false,
-        $ignorecache = false,
-        $timeout = 10,
-        &$errormessage = ''
-    ): ?array {
+    public static function get_subscription_information($forcecache = false, $ignorecache = false, $timeout = 10): ?array {
         global $CFG;
-
-        $errormessage = '';
 
         require_once($CFG->libdir . '/filelib.php');
 
@@ -977,6 +968,7 @@ class api {
 
         $wsresponse = @json_decode($response, true);
         $info = $curl->get_info();
+        $errormessage = '';
 
         if ($curlerrno = $curl->get_errno()) {
             // CURL connection error.
