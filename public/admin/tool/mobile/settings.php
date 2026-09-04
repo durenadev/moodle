@@ -320,11 +320,7 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
     ));
     if (!$ispremiumplan && isset($featureslimited['disabledfeatures'])) {
         $featureparams['limit'] = $featureslimited['disabledfeatures'];
-        if ($featureparams['limit'] == 1) {
-            $templatesubscribe['message'] = get_string('limiteddisabledfeatures_single', 'tool_mobile', $featureparams);
-        } else {
-            $templatesubscribe['message'] = get_string('limiteddisabledfeatures', 'tool_mobile', $featureparams);
-        }
+        $templatesubscribe['message'] = get_string('limiteddisabledfeatures', 'tool_mobile', $featureparams);
 
         $temp->add(new admin_setting_heading(
             'tool_mobile/disabledfeaturessubscribe',
@@ -347,12 +343,7 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
     ));
     if (!$ispremiumplan && isset($featureslimited['custommenuitems'])) {
         $featureparams['limit'] = $featureslimited['custommenuitems'];
-        if ($featureparams['limit'] == 1) {
-            $templatesubscribe['message'] = get_string('limitedmenuitems_single', 'tool_mobile', $featureparams);
-        } else {
-            $templatesubscribe['message'] = get_string('limitedmenuitems', 'tool_mobile', $featureparams);
-        }
-
+        $templatesubscribe['message'] = get_string('limitedmenuitems', 'tool_mobile', $featureparams);
         $temp->add(new admin_setting_heading(
             'tool_mobile/custommenuitemssubscribe',
             '',
@@ -371,11 +362,7 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
     ));
     if (!$ispremiumplan && isset($featureslimited['custommenuitems'])) {
         $featureparams['limit'] = $featureslimited['custommenuitems'];
-        if ($featureparams['limit'] == 1) {
-            $templatesubscribe['message'] = get_string('limitedmenuitems_single', 'tool_mobile', $featureparams);
-        } else {
-            $templatesubscribe['message'] = get_string('limitedmenuitems', 'tool_mobile', $featureparams);
-        }
+        $templatesubscribe['message'] = get_string('limitedmenuitems', 'tool_mobile', $featureparams);
 
         $temp->add(new admin_setting_heading(
             'tool_mobile/customusermenuitemssubscribe',
@@ -396,11 +383,7 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
     ));
     if (!$ispremiumplan && isset($featureslimited['customlangstrings'])) {
         $featureparams['limit'] = $featureslimited['customlangstrings'];
-        if ($featureparams['limit'] == 1) {
-            $templatesubscribe['message'] = get_string('limitedcustomlangstrings_single', 'tool_mobile', $featureparams);
-        } else {
-            $templatesubscribe['message'] = get_string('limitedcustomlangstrings', 'tool_mobile', $featureparams);
-        }
+        $templatesubscribe['message'] = get_string('limitedcustomlangstrings', 'tool_mobile', $featureparams);
 
         $temp->add(new admin_setting_heading(
             'tool_mobile/customlangstringssubscribe',
