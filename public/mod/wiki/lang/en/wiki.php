@@ -23,6 +23,7 @@ $string['backpage'] = 'Back to page';
 $string['backtomapmenu'] = 'Back to map menu';
 $string['changerate'] = 'Do you wish to change it?';
 $string['cannotcomparenewerversion'] = 'A page version can only be compared with an older version.';
+$string['cannotcreatepage'] = 'You can not create a page.';
 $string['cannoteditpage'] = 'You can not edit this page.';
 $string['cannotmanagefiles'] = 'You don\'t have permission to manage the wiki files.';
 $string['cannotviewfiles'] = 'You don\'t have permission to view the wiki files.';
