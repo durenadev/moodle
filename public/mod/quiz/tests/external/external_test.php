@@ -1620,6 +1620,10 @@ final class external_test extends \core_external\tests\externallib_testcase {
         /** @var structure $structure */
         $structure = $quizobj->get_structure();
         $structure->update_slot_display_number($structure->get_slot_id_for_slot(1), '1.a');
+        $sections = $structure->get_sections();
+        $firstsection = reset($sections);
+        $structure->set_section_heading($firstsection->id, 'Section heading');
+        $structure->add_section_heading($structure->get_page_number_for_slot(2), 'Second section heading');
 
         // Set correctness mask so questions state can be fetched only after finishing the attempt.
         $DB->set_field('quiz', 'reviewcorrectness', display_options::IMMEDIATELY_AFTER, ['id' => $quiz->id]);
@@ -1642,6 +1646,8 @@ final class external_test extends \core_external\tests\externallib_testcase {
         $this->assertCount(0, $result['messages']);
         $this->assertCount(1, $result['questions']);
         $this->assertEquals(1, $result['questions'][0]['slot']);
+        $this->assertIsString($result['questions'][0]['slotheading']);
+        $this->assertEquals('Section heading', $result['questions'][0]['slotheading']);
         $this->assertArrayNotHasKey('number', $result['questions'][0]);
         $this->assertEquals('1.a', $result['questions'][0]['questionnumber']);
         $this->assertEquals('numerical', $result['questions'][0]['type']);
@@ -1666,6 +1672,8 @@ final class external_test extends \core_external\tests\externallib_testcase {
         $this->assertCount(0, $result['messages']);
         $this->assertCount(1, $result['questions']);
         $this->assertEquals(2, $result['questions'][0]['slot']);
+        $this->assertIsString($result['questions'][0]['slotheading']);
+        $this->assertEquals('Second section heading', $result['questions'][0]['slotheading']);
         $this->assertEquals(2, $result['questions'][0]['questionnumber']);
         $this->assertEquals(2, $result['questions'][0]['number']);
         $this->assertEquals('numerical', $result['questions'][0]['type']);
@@ -1685,6 +1693,8 @@ final class external_test extends \core_external\tests\externallib_testcase {
         // Now we should receive the question state.
         $result = mod_quiz_external::get_attempt_review($attempt->id, 1);
         $result = external_api::clean_returnvalue(mod_quiz_external::get_attempt_review_returns(), $result);
+        $this->assertIsString($result['questions'][0]['slotheading']);
+        $this->assertEquals('Second section heading', $result['questions'][0]['slotheading']);
         $this->assertEquals('notanswered', $result['questions'][0]['stateclass']);
         $this->assertEquals('gaveup', $result['questions'][0]['state']);
 
@@ -1699,8 +1709,8 @@ final class external_test extends \core_external\tests\externallib_testcase {
         // We receive two questions per page.
         $result = mod_quiz_external::get_attempt_data($attempt->id, 0);
         $result = external_api::clean_returnvalue(mod_quiz_external::get_attempt_data_returns(), $result);
-        $this->assertCount(2, $result['questions']);
-        $this->assertEquals(-1, $result['nextpage']);
+        $this->assertCount(1, $result['questions']);
+        $this->assertEquals(1, $result['nextpage']);
 
         // Check questions looks good.
         $found = 0;
@@ -1712,7 +1722,7 @@ final class external_test extends \core_external\tests\externallib_testcase {
                 }
             }
         }
-        $this->assertEquals(2, $found);
+        $this->assertEquals(1, $found);
 
     }
 
@@ -1769,6 +1779,11 @@ final class external_test extends \core_external\tests\externallib_testcase {
         $timenow = time();
         // Create a new quiz with one attempt started.
         list($quiz, $context, $quizobj, $attempt, $attemptobj) = $this->create_quiz_with_questions(true);
+        $structure = $quizobj->get_structure();
+        $sections = $structure->get_sections();
+        $firstsection = reset($sections);
+        $structure->set_section_heading($firstsection->id, 'Section heading');
+        $structure->add_section_heading($structure->get_page_number_for_slot(2), 'Second section heading');
 
         $this->setUser($this->student);
         $result = mod_quiz_external::get_attempt_summary($attempt->id);
@@ -1777,8 +1792,12 @@ final class external_test extends \core_external\tests\externallib_testcase {
         // Check the state, flagged and mark data is correct.
         $this->assertEquals('todo', $result['questions'][0]['state']);
         $this->assertEquals('notyetanswered', $result['questions'][0]['stateclass']);
+        $this->assertIsString($result['questions'][0]['slotheading']);
+        $this->assertEquals('Section heading', $result['questions'][0]['slotheading']);
         $this->assertEquals('todo', $result['questions'][1]['state']);
         $this->assertEquals('notyetanswered', $result['questions'][1]['stateclass']);
+        $this->assertIsString($result['questions'][1]['slotheading']);
+        $this->assertEquals('Second section heading', $result['questions'][1]['slotheading']);
         $this->assertEquals(1, $result['questions'][0]['number']);
         $this->assertEquals(2, $result['questions'][1]['number']);
         $this->assertFalse($result['questions'][0]['flagged']);
@@ -2132,7 +2151,12 @@ final class external_test extends \core_external\tests\externallib_testcase {
         global $DB;
 
         // Create a new quiz with two questions and one attempt finished.
-        [$quiz, , , $attempt] = $this->create_quiz_with_questions(true, true);
+        [$quiz, , $quizobj, $attempt] = $this->create_quiz_with_questions(true, true);
+        $structure = $quizobj->get_structure();
+        $sections = $structure->get_sections();
+        $firstsection = reset($sections);
+        $structure->set_section_heading($firstsection->id, 'Section heading');
+        $structure->add_section_heading($structure->get_page_number_for_slot(2), 'Second section heading');
 
         // Add feedback to the quiz.
         $feedback = new \stdClass();
@@ -2160,8 +2184,12 @@ final class external_test extends \core_external\tests\externallib_testcase {
         $this->assertCount(2, $result['questions']);
         $this->assertEquals('gradedright', $result['questions'][0]['state']);
         $this->assertEquals(1, $result['questions'][0]['slot']);
+        $this->assertIsString($result['questions'][0]['slotheading']);
+        $this->assertEquals('Section heading', $result['questions'][0]['slotheading']);
         $this->assertEquals('gaveup', $result['questions'][1]['state']);
         $this->assertEquals(2, $result['questions'][1]['slot']);
+        $this->assertIsString($result['questions'][1]['slotheading']);
+        $this->assertEquals('Second section heading', $result['questions'][1]['slotheading']);
 
         // Only first page.
         $result = mod_quiz_external::get_attempt_review($attempt->id, 0);

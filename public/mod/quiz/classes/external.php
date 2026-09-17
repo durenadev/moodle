@@ -1172,6 +1172,7 @@ class mod_quiz_external extends external_api {
         return new external_single_structure(
             [
                 'slot' => new external_value(PARAM_INT, 'slot number'),
+                'slotheading' => new external_value(PARAM_TEXT, 'slot heading'),
                 'type' => new external_value(PARAM_ALPHANUMEXT, 'question type, i.e: multichoice'),
                 'page' => new external_value(PARAM_INT, 'page of the quiz this question appears on'),
                 'questionnumber' => new external_value(PARAM_RAW,
@@ -1236,9 +1237,14 @@ class mod_quiz_external extends external_api {
             // Check display settings for question.
             $settings = $questiondef->get_question_definition_for_external_rendering($qattempt, $displayoptions);
 
+            // Get the heading before this slot for display purposes.
+            $heading = $attemptobj->get_heading_before_slot($slot);
+            $heading = $heading ? format_string($heading) : '';
+
             // Navigation information.
             $question = [
                 'slot' => $slot,
+                'slotheading' => $heading,
                 'page' => $attemptobj->get_question_page($slot),
                 'questionnumber' => $attemptobj->get_question_number($slot),
                 'flagged' => $attemptobj->is_question_flagged($slot),
