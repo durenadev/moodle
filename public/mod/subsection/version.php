@@ -25,6 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_subsection';
-$plugin->version = 2026100500;
+$plugin->version = 2026100600;
 $plugin->requires = 2026100200;
 $plugin->maturity = MATURITY_STABLE;
