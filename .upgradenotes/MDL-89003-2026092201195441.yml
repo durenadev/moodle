@@ -1,0 +1,9 @@
+issueNumber: MDL-89003
+notes:
+  mod_subsection:
+    - message: >-
+        The site plugin code used to support subsections in app versions
+        previous to 4.5 (`db/mobile.php`, `classes/output/mobile.php` and the
+        `mobileapp/` directory) has been removed, as enough time has passed
+        since native support was added.
+      type: removed
