@@ -191,6 +191,7 @@ class notify_push_notification_limit_to_admins extends \core\task\scheduled_task
         \core\output\renderer_base $renderer,
         array $context
     ): string {
+        $context['learnmoreplan'] = html_to_text($context['learnmoreplan']);
         return $renderer->render_from_template('tool_mobile/push_notification_limit_message_textemail', $context);
     }
 
