@@ -55,6 +55,25 @@ class subscription implements \renderable, \templatable {
     }
 
     /**
+     * Get the target URLs configured in a custom menu items setting.
+     *
+     * Each non-blank line is expected to follow the "text|url" custom menu format; the URL is
+     * the second (pipe-separated) value. Malformed lines without a URL are ignored.
+     *
+     * @param string $menuitemsconfig raw setting value (one menu item per line)
+     * @return string[] URLs found in the setting, preserving duplicate entries
+     */
+    private static function get_unique_menu_item_urls(string $menuitemsconfig): array {
+        $lines = array_filter(explode("\n", rtrim($menuitemsconfig, "\n")), fn($line) => trim($line) !== '');
+
+        $urls = array_filter(array_map(function ($line) {
+            return explode('|', $line)[1] ?? null;
+        }, $lines));
+
+        return $urls;
+    }
+
+    /**
      * Exports the data.
      *
      * @param \core\output\renderer_base $output
@@ -265,31 +284,9 @@ class subscription implements \renderable, \templatable {
                         break;
                     // Check menu items.
                     case 'custommenuitems':
-                        $custommenuitems = [];
-                        $els = rtrim($ms->custommenuitems, "\n");
-                        if (!empty($els)) {
-                            $custommenuitems = explode("\n", $els);
-                            // Get unique custom menu urls.
-                            $custommenuitems = array_flip(
-                                array_map(function ($val) {
-                                    return explode('|', $val)[1];
-                                }, $custommenuitems)
-                            );
-                        }
-
-                        $customusermenuitems = [];
-                        $els = rtrim($ms->customusermenuitems, "\n");
-                        if (!empty($els)) {
-                            $customusermenuitems = explode("\n", $els);
-                            // Get unique custom menu urls.
-                            $customusermenuitems = array_flip(
-                                array_map(function ($val) {
-                                    return explode('|', $val)[1];
-                                }, $customusermenuitems)
-                            );
-                        }
-
-                        $feature['status'] = count($custommenuitems) + count($customusermenuitems);
+                        $custommenuitemscount = count(self::get_unique_menu_item_urls($ms->custommenuitems));
+                        $customusermenuitemscount = count(self::get_unique_menu_item_urls($ms->customusermenuitems));
+                        $feature['status'] = $custommenuitemscount + $customusermenuitemscount;
                         $feature['showstatus'] = 1;
                         break;
                     // Check language strings.
@@ -297,10 +294,10 @@ class subscription implements \renderable, \templatable {
                         $langstrings = [];
                         $els = rtrim($ms->customlangstrings, "\n");
                         if (!empty($els)) {
-                            $langstrings = explode("\n", $els);
+                            $langstrings = array_filter(explode("\n", $els), fn($val) => trim($val) !== '');
                             // Get unique language string ids.
                             $langstrings = array_flip(
-                                array_map(function($val) {
+                                array_map(function ($val) {
                                     return explode('|', $val)[0];
                                 }, $langstrings)
                             );
