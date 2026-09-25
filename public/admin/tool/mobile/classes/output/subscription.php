@@ -55,6 +55,47 @@ class subscription implements \renderable, \templatable {
     }
 
     /**
+     * Get the non-blank, trimmed lines from a multiline setting.
+     *
+     * @param string $config raw setting value
+     * @return string[] trimmed non-blank lines
+     */
+    private static function get_line_values(string $config): array {
+        return array_values(array_filter(array_map('trim', explode("\n", $config)), fn($line) => $line !== ''));
+    }
+
+    /**
+     * Get the unique target URLs configured in a custom menu items setting.
+     *
+     * Each line is expected to follow the "text|url" custom menu format; the URL is the second
+     * (pipe-separated) value. Malformed lines without a URL are ignored.
+     *
+     * @param string $menuitemsconfig raw setting value (one menu item per line)
+     * @return string[] unique URLs found in the setting
+     */
+    private static function get_unique_menu_item_urls(string $menuitemsconfig): array {
+        $urls = array_map(function ($line) {
+            return trim(explode('|', $line)[1] ?? '');
+        }, self::get_line_values($menuitemsconfig));
+
+        return array_values(array_unique(array_filter($urls, fn($url) => $url !== '')));
+    }
+
+    /**
+     * Get the unique identifiers configured in a custom language strings setting.
+     *
+     * @param string $customlangstrings raw setting value (one language string per line)
+     * @return string[] unique language string identifiers
+     */
+    private static function get_unique_customlangstring_ids(string $customlangstrings): array {
+        $ids = array_map(function ($line) {
+            return trim(explode('|', $line)[0]);
+        }, self::get_line_values($customlangstrings));
+
+        return array_values(array_unique($ids));
+    }
+
+    /**
      * Exports the data.
      *
      * @param \core\output\renderer_base $output
@@ -265,47 +306,14 @@ class subscription implements \renderable, \templatable {
                         break;
                     // Check menu items.
                     case 'custommenuitems':
-                        $custommenuitems = [];
-                        $els = rtrim($ms->custommenuitems, "\n");
-                        if (!empty($els)) {
-                            $custommenuitems = explode("\n", $els);
-                            // Get unique custom menu urls.
-                            $custommenuitems = array_flip(
-                                array_map(function ($val) {
-                                    return explode('|', $val)[1];
-                                }, $custommenuitems)
-                            );
-                        }
-
-                        $customusermenuitems = [];
-                        $els = rtrim($ms->customusermenuitems, "\n");
-                        if (!empty($els)) {
-                            $customusermenuitems = explode("\n", $els);
-                            // Get unique custom menu urls.
-                            $customusermenuitems = array_flip(
-                                array_map(function ($val) {
-                                    return explode('|', $val)[1];
-                                }, $customusermenuitems)
-                            );
-                        }
-
-                        $feature['status'] = count($custommenuitems) + count($customusermenuitems);
+                        $custommenuitemscount = count(self::get_unique_menu_item_urls($ms->custommenuitems));
+                        $customusermenuitemscount = count(self::get_unique_menu_item_urls($ms->customusermenuitems));
+                        $feature['status'] = $custommenuitemscount + $customusermenuitemscount;
                         $feature['showstatus'] = 1;
                         break;
                     // Check language strings.
                     case 'customlanguagestrings':
-                        $langstrings = [];
-                        $els = rtrim($ms->customlangstrings, "\n");
-                        if (!empty($els)) {
-                            $langstrings = explode("\n", $els);
-                            // Get unique language string ids.
-                            $langstrings = array_flip(
-                                array_map(function($val) {
-                                    return explode('|', $val)[0];
-                                }, $langstrings)
-                            );
-                        }
-                        $feature['status'] = count($langstrings);
+                        $feature['status'] = count(self::get_unique_customlangstring_ids($ms->customlangstrings));
                         $feature['showstatus'] = 1;
                         break;
                     // Check disabled features strings.
