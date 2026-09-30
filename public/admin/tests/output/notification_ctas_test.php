@@ -28,7 +28,7 @@ namespace core_admin\output;
 #[\PHPUnit\Framework\Attributes\CoversClass(notification_ctas::class)]
 final class notification_ctas_test extends \advanced_testcase {
     /**
-     * All four cards are shown by default, in a fixed order, with tracked hrefs.
+     * All six cards are shown by default, in a fixed order.
      */
     public function test_export_for_template_default(): void {
         global $PAGE;
@@ -38,9 +38,9 @@ final class notification_ctas_test extends \advanced_testcase {
         $data = $ctas->export_for_template($PAGE->get_renderer('core'));
 
         $this->assertTrue($data->hasctas);
-        $this->assertCount(4, $data->ctas);
+        $this->assertCount(6, $data->ctas);
         $this->assertSame(
-            ['marketplace', 'moodlecloud', 'partners', 'feedback'],
+            ['marketplace', 'moodlecloud', 'premiumapp', 'brandedapp', 'partners', 'feedback'],
             array_map(fn($cta) => $cta->key, $data->ctas)
         );
 
@@ -183,11 +183,15 @@ final class notification_ctas_test extends \advanced_testcase {
 
         $this->assertSame(26, $bykey['marketplace']->logoheight);
         $this->assertSame(30, $bykey['moodlecloud']->logoheight);
+        $this->assertSame(28, $bykey['premiumapp']->logoheight);
+        $this->assertSame(28, $bykey['brandedapp']->logoheight);
         $this->assertSame(46, $bykey['partners']->logoheight);
         $this->assertSame(28, $bykey['feedback']->logoheight);
 
         $this->assertFalse($bykey['marketplace']->logopill);
         $this->assertFalse($bykey['moodlecloud']->logopill);
+        $this->assertFalse($bykey['premiumapp']->logopill);
+        $this->assertFalse($bykey['brandedapp']->logopill);
         $this->assertFalse($bykey['partners']->logopill);
         $this->assertTrue($bykey['feedback']->logopill);
     }
@@ -199,26 +203,26 @@ final class notification_ctas_test extends \advanced_testcase {
         global $CFG, $PAGE;
         $this->resetAfterTest();
 
-        $CFG->disablenotificationctas = ['moodlecloud', 'partners'];
+        $CFG->disablenotificationctas = ['moodlecloud', 'premiumapp', 'partners'];
 
         $ctas = new notification_ctas();
         $data = $ctas->export_for_template($PAGE->get_renderer('core'));
 
         $this->assertTrue($data->hasctas);
         $this->assertSame(
-            ['marketplace', 'feedback'],
+            ['marketplace', 'brandedapp', 'feedback'],
             array_map(fn($cta) => $cta->key, $data->ctas)
         );
     }
 
     /**
-     * Disabling all four CTA keys results in no cards being shown.
+     * Disabling all six CTA keys results in no cards being shown.
      */
     public function test_disablenotificationctas_can_hide_all_cards(): void {
         global $CFG, $PAGE;
         $this->resetAfterTest();
 
-        $CFG->disablenotificationctas = ['marketplace', 'moodlecloud', 'partners', 'feedback'];
+        $CFG->disablenotificationctas = ['marketplace', 'moodlecloud', 'premiumapp', 'brandedapp', 'partners', 'feedback'];
 
         $ctas = new notification_ctas();
         $data = $ctas->export_for_template($PAGE->get_renderer('core'));
@@ -242,7 +246,7 @@ final class notification_ctas_test extends \advanced_testcase {
         $data = $ctas->export_for_template($PAGE->get_renderer('core'));
 
         $this->assertSame(
-            ['marketplace', 'moodlecloud', 'partners'],
+            ['marketplace', 'moodlecloud', 'premiumapp', 'brandedapp', 'partners'],
             array_map(fn($cta) => $cta->key, $data->ctas)
         );
     }
@@ -262,7 +266,7 @@ final class notification_ctas_test extends \advanced_testcase {
         $data = $ctas->export_for_template($PAGE->get_renderer('core'));
 
         $this->assertSame(
-            ['marketplace', 'moodlecloud', 'partners'],
+            ['marketplace', 'moodlecloud', 'premiumapp', 'brandedapp', 'partners'],
             array_map(fn($cta) => $cta->key, $data->ctas)
         );
     }
