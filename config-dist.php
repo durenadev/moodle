@@ -1204,10 +1204,10 @@ $CFG->admin = 'admin';
 //=========================================================================
 //
 // The admin Notifications page (/admin/index.php) shows a "From Moodle" section with CTA cards for
-// the Marketplace, MoodleCloud, Moodle Services and the site feedback survey. Individual
+// the Marketplace, MoodleCloud, app Premium App, Branded Moodle App, Moodle Services and site feedback survey. Individual
 // cards can be hidden by key. There is no admin settings UI for this - config.php only.
 //
-// $CFG->disablenotificationctas = ['marketplace', 'moodlecloud', 'partners', 'feedback'];
+// $CFG->disablenotificationctas = ['marketplace', 'moodlecloud', 'partners', 'feedback', 'premiumapp', 'brandedapp'];
 //
 // Any key present in the array hides that card. Omit the setting, or use an empty array, to show all cards.
 // The feedback card is also hidden automatically once $CFG->enableuserfeedback is on; the 'feedback'
