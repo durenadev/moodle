@@ -87,7 +87,7 @@ class notification_ctas implements renderable, templatable {
     }
 
     /**
-     * Return the definitions of the four "From Moodle" CTA cards.
+     * Return the definitions of the "From Moodle" CTA cards.
      *
      * Card copy is agreed content and must not be treated as placeholder text; see MDL-89290 for the
      * original cards and MDL-89756 for the current copy and link corrections.
@@ -128,6 +128,36 @@ class notification_ctas implements renderable, templatable {
                 'cta' => get_string('notificationctamoodlecloudcta', 'admin'),
                 'caption' => get_string('notificationctamoodlecloudcaption', 'admin'),
                 'url' => 'https://www.moodlecloud.com/standard-plans/',
+                'internal' => false,
+            ],
+            'premiumapp' => [
+                'logo' => 'notification_cta_premiumapp',
+                'logoheight' => 28,
+                'title' => get_string('notificationctapremiumapptitle', 'admin'),
+                'body' => get_string('notificationctapremiumappbody', 'admin'),
+                'ticks' => [
+                    get_string('notificationctapremiumapptick1', 'admin'),
+                    get_string('notificationctapremiumapptick2', 'admin'),
+                    get_string('notificationctapremiumapptick3', 'admin'),
+                ],
+                'cta' => get_string('notificationctapremiumappcta', 'admin'),
+                'caption' => get_string('notificationctapremiumappcaption', 'admin'),
+                'url' => (new moodle_url('/admin/tool/mobile/subscription.php'))->out(false),
+                'internal' => true,
+            ],
+            'brandedapp' => [
+                'logo' => 'notification_cta_brandedapp',
+                'logoheight' => 28,
+                'title' => get_string('notificationctabrandedapptitle', 'admin'),
+                'body' => get_string('notificationctabrandedappbody', 'admin'),
+                'ticks' => [
+                    get_string('notificationctabrandedapptick1', 'admin'),
+                    get_string('notificationctabrandedapptick2', 'admin'),
+                    get_string('notificationctabrandedapptick3', 'admin'),
+                ],
+                'cta' => get_string('notificationctabrandedappcta', 'admin'),
+                'caption' => get_string('notificationctabrandedappcaption', 'admin'),
+                'url' => 'https://moodle.com/services/branded-app/',
                 'internal' => false,
             ],
             'partners' => [

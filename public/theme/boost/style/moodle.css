@@ -34070,7 +34070,7 @@ img.icon {
  *   band         The header strip the brand logo sits on.
  *   button       The CTA button fill. Not always the band colour: the Partners and feedback bands are light,
  *                so their buttons are near black instead.
- *   button-hover The hover and active fill. Given as a lighter shade across all four cards,
+ *   button-hover The hover and active fill. Given as a lighter shade across all cards,
  *                as the dark button fills have no room to darken further.
  *   tick         The check icons in the card body.
  */
@@ -34132,6 +34132,30 @@ img.icon {
   --cta-button: #898989;
   --cta-button-hover: #b4b4b4;
   --cta-tick: darkgray;
+}
+
+.admin-notification-ctas .admin-notification-cta[data-cta-key=premiumapp] {
+  --cta-band: #1d2b5e;
+  --cta-button: #1d2b5e;
+  --cta-button-hover: #2b3f8a;
+  --cta-tick: #1d2b5e;
+}
+[data-bs-theme=dark] .admin-notification-ctas .admin-notification-cta[data-cta-key=premiumapp] {
+  --cta-button: #838aa6;
+  --cta-button-hover: #a5aabf;
+  --cta-tick: #a5aabf;
+}
+
+.admin-notification-ctas .admin-notification-cta[data-cta-key=brandedapp] {
+  --cta-band: #9b2277;
+  --cta-button: #9b2277;
+  --cta-button-hover: #aa438b;
+  --cta-tick: #9b2277;
+}
+[data-bs-theme=dark] .admin-notification-ctas .admin-notification-cta[data-cta-key=brandedapp] {
+  --cta-button: #be6fa7;
+  --cta-button-hover: #d29cc2;
+  --cta-tick: #d29cc2;
 }
 
 .admin-notification-ctas .admin-notification-cta[data-cta-key=partners] {

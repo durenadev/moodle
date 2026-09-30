@@ -28,7 +28,7 @@ namespace core_admin\output;
 #[\PHPUnit\Framework\Attributes\CoversClass(notification_ctas::class)]
 final class notification_ctas_test extends \advanced_testcase {
     /**
-     * All four cards are shown by default, in a fixed order, with tracked hrefs.
+     * All six cards are shown by default, in a fixed order.
      */
     public function test_export_for_template_default(): void {
         global $PAGE;
@@ -38,9 +38,9 @@ final class notification_ctas_test extends \advanced_testcase {
         $data = $ctas->export_for_template($PAGE->get_renderer('core'));
 
         $this->assertTrue($data->hasctas);
-        $this->assertCount(4, $data->ctas);
+        $this->assertCount(6, $data->ctas);
         $this->assertSame(
-            ['marketplace', 'moodlecloud', 'partners', 'feedback'],
+            ['marketplace', 'moodlecloud', 'premiumapp', 'brandedapp', 'partners', 'feedback'],
             array_map(fn($cta) => $cta->key, $data->ctas)
         );
 
@@ -56,7 +56,7 @@ final class notification_ctas_test extends \advanced_testcase {
     }
 
     /**
-     * The external marketplace-style CTAs (marketplace, moodlecloud, partners) carry a base64
+     * The external marketplace-style CTAs (marketplace, moodlecloud, brandedapp, partners) carry a base64
      * "site" param following the same pattern already used and tested for the "Browse new
      * plugins" link (see tool_installaddon_installer::get_external_service_url()), so the
      * marketplace can match on site URL instead of a new registration-based lookup. A
@@ -74,7 +74,7 @@ final class notification_ctas_test extends \advanced_testcase {
             $bykey[$cta->key] = $cta;
         }
 
-        foreach (['marketplace', 'moodlecloud', 'partners'] as $key) {
+        foreach (['marketplace', 'moodlecloud', 'brandedapp', 'partners'] as $key) {
             $query = [];
             parse_str((string) parse_url($bykey[$key]->href, PHP_URL_QUERY), $query);
 
@@ -92,12 +92,13 @@ final class notification_ctas_test extends \advanced_testcase {
 
         $this->assertStringStartsWith('https://marketplace.moodle.com/', $bykey['marketplace']->href);
         $this->assertStringStartsWith('https://www.moodlecloud.com/standard-plans/', $bykey['moodlecloud']->href);
+        $this->assertStringStartsWith('https://moodle.com/services/branded-app/', $bykey['brandedapp']->href);
         $this->assertStringStartsWith('https://moodle.com/get-moodle/', $bykey['partners']->href);
     }
 
     /**
-     * The external cards (marketplace, moodlecloud, partners) open in a new window, since they
-     * leave the site; the internal feedback card stays in the same window.
+     * The external cards (marketplace, moodlecloud, brandedapp, partners) open in a new window, since they
+     * leave the site; the internal premiumapp and feedback cards stay in the same window.
      */
     public function test_external_ctas_open_in_new_window(): void {
         global $PAGE;
@@ -112,7 +113,9 @@ final class notification_ctas_test extends \advanced_testcase {
 
         $this->assertTrue($bykey['marketplace']->newwindow);
         $this->assertTrue($bykey['moodlecloud']->newwindow);
+        $this->assertTrue($bykey['brandedapp']->newwindow);
         $this->assertTrue($bykey['partners']->newwindow);
+        $this->assertFalse($bykey['premiumapp']->newwindow);
         $this->assertFalse($bykey['feedback']->newwindow);
     }
 
@@ -183,6 +186,8 @@ final class notification_ctas_test extends \advanced_testcase {
         $this->assertSame(30, $bykey['moodlecloud']->logoheight);
         $this->assertSame(46, $bykey['partners']->logoheight);
         $this->assertSame(28, $bykey['feedback']->logoheight);
+        $this->assertSame(28, $bykey['premiumapp']->logoheight);
+        $this->assertSame(28, $bykey['brandedapp']->logoheight);
     }
 
     /**
@@ -192,26 +197,26 @@ final class notification_ctas_test extends \advanced_testcase {
         global $CFG, $PAGE;
         $this->resetAfterTest();
 
-        $CFG->disablenotificationctas = ['moodlecloud', 'partners'];
+        $CFG->disablenotificationctas = ['moodlecloud', 'premiumapp', 'partners'];
 
         $ctas = new notification_ctas();
         $data = $ctas->export_for_template($PAGE->get_renderer('core'));
 
         $this->assertTrue($data->hasctas);
         $this->assertSame(
-            ['marketplace', 'feedback'],
+            ['marketplace', 'brandedapp', 'feedback'],
             array_map(fn($cta) => $cta->key, $data->ctas)
         );
     }
 
     /**
-     * Disabling all four CTA keys results in no cards being shown.
+     * Disabling all six CTA keys results in no cards being shown.
      */
     public function test_disablenotificationctas_can_hide_all_cards(): void {
         global $CFG, $PAGE;
         $this->resetAfterTest();
 
-        $CFG->disablenotificationctas = ['marketplace', 'moodlecloud', 'partners', 'feedback'];
+        $CFG->disablenotificationctas = ['marketplace', 'moodlecloud', 'premiumapp', 'brandedapp', 'partners', 'feedback'];
 
         $ctas = new notification_ctas();
         $data = $ctas->export_for_template($PAGE->get_renderer('core'));
@@ -235,7 +240,7 @@ final class notification_ctas_test extends \advanced_testcase {
         $data = $ctas->export_for_template($PAGE->get_renderer('core'));
 
         $this->assertSame(
-            ['marketplace', 'moodlecloud', 'partners'],
+            ['marketplace', 'moodlecloud', 'premiumapp', 'brandedapp', 'partners'],
             array_map(fn($cta) => $cta->key, $data->ctas)
         );
     }
@@ -255,7 +260,7 @@ final class notification_ctas_test extends \advanced_testcase {
         $data = $ctas->export_for_template($PAGE->get_renderer('core'));
 
         $this->assertSame(
-            ['marketplace', 'moodlecloud', 'partners'],
+            ['marketplace', 'moodlecloud', 'premiumapp', 'brandedapp', 'partners'],
             array_map(fn($cta) => $cta->key, $data->ctas)
         );
     }
