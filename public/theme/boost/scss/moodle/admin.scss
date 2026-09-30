@@ -719,6 +719,8 @@
 $notification-cta-brands: (
     "marketplace": (band: #32064c, button: #32064c, button-hover: #4a0a70, tick: #32064c),
     "moodlecloud": (band: #282828, button: #282828, button-hover: #545454, tick: #282828),
+    "premiumapp": (band: #1d2b5e, button: #1d2b5e, button-hover: #111a3a, tick: #1d2b5e),
+    "brandedapp": (band: #9b2277, button: #9b2277, button-hover: #881e69, tick: #9b2277),
     "partners":    (band: #fedfc1, button: #282828, button-hover: #545454, tick: #194866),
     "feedback":    (band: #f98012, button: #282828, button-hover: #545454, tick: shade-color(#f98012, 12%)),
 ) !default;

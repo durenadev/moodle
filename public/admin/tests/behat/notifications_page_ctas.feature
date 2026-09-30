@@ -7,11 +7,13 @@ Feature: From Moodle CTA cards on the notifications page
   Background:
     Given I log in as "admin"
 
-  Scenario: All four "From Moodle" CTA cards are shown by default
+  Scenario: All six "From Moodle" CTA cards are shown by default
     When I navigate to "Notifications" in site administration
     Then I should see "From Moodle"
     And I should see "Moodle Marketplace"
     And I should see "MoodleCloud"
+    And I should see "Moodle app Premium Plan"
+    And I should see "Branded Moodle App"
     And I should see "Moodle Services"
     And I should see "Help decide what we build next"
 
@@ -21,12 +23,14 @@ Feature: From Moodle CTA cards on the notifications page
     When I navigate to "Notifications" in site administration
     Then I should see "Moodle Marketplace"
     And I should not see "MoodleCloud"
+    And I should see "Moodle app Premium Plan"
+    And I should see "Branded Moodle App"
     And I should see "Moodle Services"
     And I should see "Help decide what we build next"
 
   Scenario: Disabling all CTA cards by key hides the entire "From Moodle" section
     Given the following config values are set as admin:
-      | disablenotificationctas | ["marketplace", "moodlecloud", "partners", "feedback"] |
+      | disablenotificationctas | ["marketplace", "moodlecloud", "premiumapp", "brandedapp", "partners", "feedback"] |
     When I navigate to "Notifications" in site administration
     Then I should not see "From Moodle"
 
