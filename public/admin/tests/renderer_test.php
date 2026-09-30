@@ -293,6 +293,8 @@ final class renderer_test extends \advanced_testcase {
         $this->assertStringContainsString(get_string('notificationctafromhqheading', 'admin'), $output);
         $this->assertStringContainsString(get_string('notificationctamarketplacetitle', 'admin'), $output);
         $this->assertStringContainsString(get_string('notificationctamoodlecloudtitle', 'admin'), $output);
+        $this->assertStringContainsString(get_string('notificationctapremiumapptitle', 'admin'), $output);
+        $this->assertStringContainsString(get_string('notificationctabrandedapptitle', 'admin'), $output);
         $this->assertStringContainsString(get_string('notificationctapartnerstitle', 'admin'), $output);
         $this->assertStringContainsString(get_string('notificationctafeedbacktitle', 'admin'), $output);
     }

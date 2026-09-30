@@ -34168,6 +34168,30 @@ img.icon {
   --cta-tick: #98adba;
 }
 
+.admin-notification-ctas .admin-notification-cta[data-cta-key=premiumapp] {
+  --cta-band: #1d2b5e;
+  --cta-button: #1d2b5e;
+  --cta-button-hover: #111a3a;
+  --cta-tick: #1d2b5e;
+}
+[data-bs-theme=dark] .admin-notification-ctas .admin-notification-cta[data-cta-key=premiumapp] {
+  --cta-button: #838aa6;
+  --cta-button-hover: #a5aabf;
+  --cta-tick: #a5aabf;
+}
+
+.admin-notification-ctas .admin-notification-cta[data-cta-key=brandedapp] {
+  --cta-band: #9b2277;
+  --cta-button: #9b2277;
+  --cta-button-hover: #881e69;
+  --cta-tick: #9b2277;
+}
+[data-bs-theme=dark] .admin-notification-ctas .admin-notification-cta[data-cta-key=brandedapp] {
+  --cta-button: #be6fa7;
+  --cta-button-hover: #d29cc2;
+  --cta-tick: #d29cc2;
+}
+
 .admin-notification-ctas .admin-notification-cta[data-cta-key=partners] {
   --cta-band: #fedfc1;
   --cta-button: #282828;
