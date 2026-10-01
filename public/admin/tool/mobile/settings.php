@@ -305,6 +305,23 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
         ));
     }
 
+    $temp->add(new admin_setting_configcheckbox(
+        'tool_mobile/biometriclogin',
+        new lang_string('biometriclogin', 'tool_mobile'),
+        new lang_string('biometriclogin_desc', 'tool_mobile'),
+        0
+    ));
+
+    if (!$ispremiumplan && get_config('tool_mobile', 'biometriclogin')) {
+        $templatesubscribe['message'] = get_string('biometriconlypremium', 'tool_mobile', $featureparams);
+
+        $temp->add(new admin_setting_heading(
+            'tool_mobile/biometriconlypremium',
+            '',
+            $OUTPUT->render_from_template('tool_mobile/subscribe_alert', $templatesubscribe)
+        ));
+    }
+
     $temp->add(new admin_setting_heading(
         'tool_mobile/customisation',
         new lang_string('customisation', 'tool_mobile'),
