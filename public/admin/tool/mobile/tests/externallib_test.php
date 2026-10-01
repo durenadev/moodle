@@ -228,6 +228,9 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
             [ 'name' => 'tool_mobile_autologout', 'value' => get_config('tool_mobile', 'autologout') ],
             [ 'name' => 'tool_mobile_autologouttime', 'value' => get_config('tool_mobile', 'autologouttime') ],
             [ 'name' => 'tool_mobile_biometriclogin', 'value' => get_config('tool_mobile', 'biometriclogin') ],
+            [ 'name' => 'tool_mobile_matomoanalytic', 'value' => get_config('tool_mobile', 'matomoanalytic') ],
+            [ 'name' => 'tool_mobile_matomoanalyticurl', 'value' => get_config('tool_mobile', 'matomoanalyticurl') ],
+            [ 'name' => 'tool_mobile_matomoanalyticwebsiteid', 'value' => get_config('tool_mobile', 'matomoanalyticwebsiteid') ],
             [ 'name' => 'calendartype', 'value' => $CFG->calendartype ],
             [ 'name' => 'calendar_site_timeformat', 'value' => $CFG->calendar_site_timeformat ],
             [ 'name' => 'calendar_startwday', 'value' => $CFG->calendar_startwday ],
@@ -318,10 +321,39 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
             ['name' => 'tool_mobile_autologout', 'value' => get_config('tool_mobile', 'autologout')],
             ['name' => 'tool_mobile_autologouttime', 'value' => get_config('tool_mobile', 'autologouttime')],
             ['name' => 'tool_mobile_biometriclogin', 'value' => get_config('tool_mobile', 'biometriclogin')],
+            ['name' => 'tool_mobile_matomoanalytic', 'value' => get_config('tool_mobile', 'matomoanalytic')],
+            ['name' => 'tool_mobile_matomoanalyticurl', 'value' => get_config('tool_mobile', 'matomoanalyticurl')],
+            ['name' => 'tool_mobile_matomoanalyticwebsiteid', 'value' => get_config('tool_mobile', 'matomoanalyticwebsiteid')],
         ];
 
         $this->assertCount(0, $result['warnings']);
         $this->assertEquals($expected, $result['settings']);
+    }
+
+    /**
+     * Test that Matomo analytics details are only returned when Matomo analytics is enabled.
+     */
+    public function test_get_config_matomoanalytic(): void {
+        $this->resetAfterTest();
+
+        set_config('matomoanalyticurl', 'https://matomo.example.com', 'tool_mobile');
+        set_config('matomoanalyticwebsiteid', '42', 'tool_mobile');
+
+        // Enabled: details are returned.
+        set_config('matomoanalytic', 1, 'tool_mobile');
+        $result = external::get_config('mobileapp');
+        $result = external_api::clean_returnvalue(external::get_config_returns(), $result);
+        $settings = array_column($result['settings'], 'value', 'name');
+        $this->assertEquals('https://matomo.example.com', $settings['tool_mobile_matomoanalyticurl']);
+        $this->assertEquals('42', $settings['tool_mobile_matomoanalyticwebsiteid']);
+
+        // Disabled (e.g. via CLI, without going through the admin form): stored details are not returned.
+        set_config('matomoanalytic', 0, 'tool_mobile');
+        $result = external::get_config('mobileapp');
+        $result = external_api::clean_returnvalue(external::get_config_returns(), $result);
+        $settings = array_column($result['settings'], 'value', 'name');
+        $this->assertEquals('', $settings['tool_mobile_matomoanalyticurl']);
+        $this->assertEquals('', $settings['tool_mobile_matomoanalyticwebsiteid']);
     }
 
     /*

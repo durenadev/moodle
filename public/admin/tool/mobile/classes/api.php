@@ -425,6 +425,12 @@ class api {
             $settings->tool_mobile_autologout = get_config('tool_mobile', 'autologout');
             $settings->tool_mobile_autologouttime = get_config('tool_mobile', 'autologouttime');
             $settings->tool_mobile_biometriclogin = get_config('tool_mobile', 'biometriclogin');
+            $matomoanalytic = get_config('tool_mobile', 'matomoanalytic');
+            $settings->tool_mobile_matomoanalytic = $matomoanalytic;
+            // Do not expose Matomo details when Matomo analytics is disabled.
+            $settings->tool_mobile_matomoanalyticurl = $matomoanalytic ? get_config('tool_mobile', 'matomoanalyticurl') : '';
+            $settings->tool_mobile_matomoanalyticwebsiteid = $matomoanalytic ?
+                get_config('tool_mobile', 'matomoanalyticwebsiteid') : '';
         }
 
         if (empty($section) or $section == 'calendar') {
