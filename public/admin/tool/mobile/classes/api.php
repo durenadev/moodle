@@ -295,6 +295,7 @@ class api {
                 get_config('tool_mobile', 'enabledeeplinkautologin'),
                 PARAM_BOOL
             ),
+            'tool_mobile_biometriclogin' => clean_param(get_config('tool_mobile', 'biometriclogin'), PARAM_BOOL),
             'supportpage' => $sitesupportavailable ? clean_param($CFG->supportpage, PARAM_URL) : '',
             'supportavailability' => clean_param($CFG->supportavailability, PARAM_INT),
             'showloginform' => (int) get_config('core', 'showloginform'),
@@ -423,6 +424,7 @@ class api {
             $settings->tool_mobile_autologinmintimebetweenreq = $mintimereq;
             $settings->tool_mobile_autologout = get_config('tool_mobile', 'autologout');
             $settings->tool_mobile_autologouttime = get_config('tool_mobile', 'autologouttime');
+            $settings->tool_mobile_biometriclogin = get_config('tool_mobile', 'biometriclogin');
         }
 
         if (empty($section) or $section == 'calendar') {
