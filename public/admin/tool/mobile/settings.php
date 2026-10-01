@@ -323,6 +323,54 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
     }
 
     $temp->add(new admin_setting_heading(
+        'tool_mobile/analytics',
+        new lang_string('analytics', 'tool_mobile'),
+        ''
+    ));
+
+    $matomolearnmoreurl = 'https://docs.moodle.org/en/Moodle_app_guide_for_admins#Integration_with_Matomo_analytics';
+    $temp->add(new admin_setting_configcheckbox(
+        'tool_mobile/matomoanalytic',
+        new lang_string('matomoanalytic', 'tool_mobile'),
+        new lang_string('matomoanalytic_desc', 'tool_mobile', $matomolearnmoreurl),
+        0
+    ));
+
+    $temp->add(new admin_setting_configtext(
+        'tool_mobile/matomoanalyticurl',
+        new lang_string('matomoanalyticurl', 'tool_mobile'),
+        new lang_string('matomoanalyticurl_desc', 'tool_mobile'),
+        '',
+        PARAM_URL
+    ));
+    $temp->hide_if('tool_mobile/matomoanalyticurl', 'tool_mobile/matomoanalytic');
+
+    $temp->add(new admin_setting_configtext(
+        'tool_mobile/matomoanalyticwebsiteid',
+        new lang_string('matomoanalyticwebsiteid', 'tool_mobile'),
+        new lang_string('matomoanalyticwebsiteid_desc', 'tool_mobile'),
+        '',
+        PARAM_RAW
+    ));
+    $temp->hide_if('tool_mobile/matomoanalyticwebsiteid', 'tool_mobile/matomoanalytic');
+
+    if (
+        !$ispremiumplan && (
+            get_config('tool_mobile', 'matomoanalytic') ||
+            get_config('tool_mobile', 'matomoanalyticurl') ||
+            get_config('tool_mobile', 'matomoanalyticwebsiteid')
+        )
+    ) {
+        $templatesubscribe['message'] = get_string('matomoonlypremium', 'tool_mobile', $featureparams);
+
+        $temp->add(new admin_setting_heading(
+            'tool_mobile/matomoonlypremium',
+            '',
+            $OUTPUT->render_from_template('tool_mobile/subscribe_alert', $templatesubscribe)
+        ));
+    }
+
+    $temp->add(new admin_setting_heading(
         'tool_mobile/customisation',
         new lang_string('customisation', 'tool_mobile'),
         ''
