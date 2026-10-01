@@ -98,6 +98,7 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
             'tool_mobile_setuplink' => get_config('tool_mobile', 'setuplink'),
             'tool_mobile_qrcodetype' => get_config('tool_mobile', 'qrcodetype'),
             'tool_mobile_enabledeeplinkautologin' => (int) get_config('tool_mobile', 'enabledeeplinkautologin'),
+            'tool_mobile_biometriclogin' => (int) get_config('tool_mobile', 'biometriclogin'),
             'supportpage' => $CFG->supportpage,
             'supportavailability' => $CFG->supportavailability,
             'warnings' => [],
@@ -123,6 +124,7 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
         set_config('disabledfeatures', 'myoverview', 'tool_mobile');
         set_config('minimumversion', '3.8.0', 'tool_mobile');
         set_config('enabledeeplinkautologin', 1, 'tool_mobile');
+        set_config('biometriclogin', 1, 'tool_mobile');
         set_config('supportemail', 'test@test.com');
         set_config('supportavailability', CONTACT_SUPPORT_ANYONE);
 
@@ -149,6 +151,7 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
         $expected['tool_mobile_disabledfeatures'] = 'myoverview';
         $expected['tool_mobile_minimumversion'] = '3.8.0';
         $expected['tool_mobile_enabledeeplinkautologin'] = 1;
+        $expected['tool_mobile_biometriclogin'] = 1;
 
         if ($logourl = $OUTPUT->get_logo_url()) {
             $expected['logourl'] = $logourl->out(false);
@@ -225,6 +228,7 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
             [ 'name' => 'tool_mobile_autologinmintimebetweenreq', 'value' => 6 * MINSECS ],
             [ 'name' => 'tool_mobile_autologout', 'value' => get_config('tool_mobile', 'autologout') ],
             [ 'name' => 'tool_mobile_autologouttime', 'value' => get_config('tool_mobile', 'autologouttime') ],
+            [ 'name' => 'tool_mobile_biometriclogin', 'value' => get_config('tool_mobile', 'biometriclogin') ],
             [ 'name' => 'calendartype', 'value' => $CFG->calendartype ],
             [ 'name' => 'calendar_site_timeformat', 'value' => $CFG->calendar_site_timeformat ],
             [ 'name' => 'calendar_startwday', 'value' => $CFG->calendar_startwday ],
@@ -314,6 +318,7 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
             ['name' => 'tool_mobile_autologinmintimebetweenreq', 'value' => get_config('tool_mobile', 'autologinmintimebetweenreq')],
             ['name' => 'tool_mobile_autologout', 'value' => get_config('tool_mobile', 'autologout')],
             ['name' => 'tool_mobile_autologouttime', 'value' => get_config('tool_mobile', 'autologouttime')],
+            ['name' => 'tool_mobile_biometriclogin', 'value' => get_config('tool_mobile', 'biometriclogin')],
         ];
 
         $this->assertCount(0, $result['warnings']);
