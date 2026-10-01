@@ -229,6 +229,9 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
             [ 'name' => 'tool_mobile_autologout', 'value' => get_config('tool_mobile', 'autologout') ],
             [ 'name' => 'tool_mobile_autologouttime', 'value' => get_config('tool_mobile', 'autologouttime') ],
             [ 'name' => 'tool_mobile_biometriclogin', 'value' => get_config('tool_mobile', 'biometriclogin') ],
+            [ 'name' => 'tool_mobile_matomoanalytic', 'value' => get_config('tool_mobile', 'matomoanalytic') ],
+            [ 'name' => 'tool_mobile_matomoanalyticurl', 'value' => get_config('tool_mobile', 'matomoanalyticurl') ],
+            [ 'name' => 'tool_mobile_matomoanalyticwebsiteid', 'value' => get_config('tool_mobile', 'matomoanalyticwebsiteid') ],
             [ 'name' => 'calendartype', 'value' => $CFG->calendartype ],
             [ 'name' => 'calendar_site_timeformat', 'value' => $CFG->calendar_site_timeformat ],
             [ 'name' => 'calendar_startwday', 'value' => $CFG->calendar_startwday ],
@@ -319,6 +322,9 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
             ['name' => 'tool_mobile_autologout', 'value' => get_config('tool_mobile', 'autologout')],
             ['name' => 'tool_mobile_autologouttime', 'value' => get_config('tool_mobile', 'autologouttime')],
             ['name' => 'tool_mobile_biometriclogin', 'value' => get_config('tool_mobile', 'biometriclogin')],
+            ['name' => 'tool_mobile_matomoanalytic', 'value' => get_config('tool_mobile', 'matomoanalytic')],
+            ['name' => 'tool_mobile_matomoanalyticurl', 'value' => get_config('tool_mobile', 'matomoanalyticurl')],
+            ['name' => 'tool_mobile_matomoanalyticwebsiteid', 'value' => get_config('tool_mobile', 'matomoanalyticwebsiteid')],
         ];
 
         $this->assertCount(0, $result['warnings']);
