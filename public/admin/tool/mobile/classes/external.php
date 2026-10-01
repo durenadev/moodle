@@ -195,6 +195,7 @@ class external extends external_api {
                     'Whether auto-login is enabled for deep links in the mobile app.',
                     VALUE_OPTIONAL,
                 ),
+                'tool_mobile_biometriclogin' => new external_value(PARAM_BOOL, 'Biometric login is enabled.', VALUE_OPTIONAL),
                 'warnings' => new external_warnings(),
                 'showloginform' => new external_value(PARAM_INT, 'Display default login form.'),
                 'tool_mfa_enabled' => new external_value(PARAM_BOOL, 'Whether MFA is enabled for the site.', VALUE_OPTIONAL),

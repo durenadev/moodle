@@ -40,6 +40,9 @@ $string['autologoutcustom'] = 'Custom time after users leave or close the app';
 $string['autologoutinmediate'] = 'Immediately after users leave or close the app';
 $string['autologouttime'] = 'Auto logout timer';
 $string['billedannually'] = 'Billed annually';
+$string['biometriclogin'] = 'Biometric login';
+$string['biometriclogin_desc'] = "Allow users to log in using biometric credentials like fingerprint or facial recognition in the Moodle app. The type of biometric credentials will depend on the users' device. Users can activate and configure biometric login in the app in User account > Preferences.";
+$string['biometriconlypremium'] = 'Biometric login is only available in Premium. Upgrade to use biometric login. <a href="{$a->url}">View plan details</a>.';
 $string['branding'] = 'Branding';
 $string['brandingandcustomisation'] = 'Branding and customisation';
 $string['brandingbrandcoloursacrosstheapp'] = 'Brand colours across the app.';
@@ -208,10 +211,10 @@ $string['qrcodeformobileappurlabout'] = 'Scan the QR code with your mobile app t
 $string['qrcodetype'] = 'QR code access';
 $string['qrcodetype_desc'] = 'Mobile users can scan a QR code to fill in the site URL. For secure (HTTPS) sites, the code also enables automatic login without the user having to enter their username and password.';
 $string['qrcodetypelogin'] = 'QR code with automatic login';
+$string['qrcodetypeloginonlypremium'] = 'QR code with automatic login is only available in Premium. Upgrade to use QR code with automatic login. <a href="{$a->url}">View plan details</a>.';
 $string['qrcodetypeurl'] = 'QR code with site URL (free)';
 $string['qrkeyttl'] = 'QR authentication key duration';
 $string['qrkeyttl_desc'] = 'The length of time for which a QR code for automatic login is valid.';
-$string['qrcodetypeloginonlypremium'] = 'QR code with automatic login is only available in Premium. Upgrade to use QR code with automatic login. <a href="{$a->url}">View plan details</a>.';
 $string['qrsameipcheck'] = 'QR authentication same IP check';
 $string['qrsameipcheck_desc'] = 'Whether users must use the same network for both generating and scanning a QR code for login. Only disable it if users report issues with the QR login.';
 $string['qrsiteadminsnotallowed'] = 'For security reasons login via QR code is not allowed for site administrators or if you are logged in as another user.';
@@ -254,8 +257,8 @@ $string['upgradeforunlimit'] = 'Upgrade to {$a} for unlimited access.';
 $string['upgradeplanlimits'] = 'Some features are available with limits on the {$a} plan.';
 $string['upgraderemovelimits'] = 'Upgrade to {$a} and remove all limits';
 $string['upgradetosubscription'] = 'Upgrade to {$a}';
-$string['upgradeyourplanaction'] = 'Upgrade your plan';
 $string['upgradeyourplan'] = '(Upgrade your plan! 🚀)';
+$string['upgradeyourplanaction'] = 'Upgrade your plan';
 $string['viewqrcode'] = 'View QR code';
 
 // Deprecated since Moodle 5.2.
