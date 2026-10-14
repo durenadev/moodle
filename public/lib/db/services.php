@@ -1913,6 +1913,27 @@ $functions = array(
         'type' => 'write',
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
     ),
+    'core_user_get_edit_profile_settings' => [
+        'classname' => '\core_user\external\get_edit_profile_settings',
+        'description' => 'Get the fields and settings needed to build the edit profile form of the current user.',
+        'type' => 'read',
+        'capabilities' => 'moodle/user:editownprofile',
+        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
+    'core_user_update_profile' => [
+        'classname' => '\core_user\external\update_profile',
+        'description' => 'Update the standard and custom profile fields of the current user.',
+        'type' => 'write',
+        'capabilities' => 'moodle/user:editownprofile',
+        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
+    'core_user_cancel_pending_email_change' => [
+        'classname' => '\core_user\external\cancel_pending_email_change',
+        'description' => 'Cancel the pending email change of the current user and return the confirmed email state.',
+        'type' => 'write',
+        'capabilities' => 'moodle/user:editownprofile',
+        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
     'core_user_add_user_private_files' => array(
         'classname' => 'core_user_external',
         'methodname' => 'add_user_private_files',
