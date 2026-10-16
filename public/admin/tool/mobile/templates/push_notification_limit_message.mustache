@@ -21,6 +21,7 @@
 
     Context variables required for this template:
     * heading
+    * messagegreeting
     * missedusers
     * metriclabel
     * limitlabel
@@ -31,11 +32,12 @@
     * alerticonurl
     * illustrationurl
     * progresswidth
+    * learnmoreplan
 
     Example context (json):
     {
         "heading": "Your monthly device limit for push notifications has been reached",
-        "messagegreeting": "You are receiving this notification because you are administrator of {$a}.",
+        "messagegreeting": "You're receiving this notification because you're an administrator of Example site.",
         "missedusers": "New students aren't receiving push notifications from the Moodle app.",
         "metriclabel": "Active devices for push notifications",
         "limitlabel": "Limit reached",
@@ -46,13 +48,13 @@
         "alerticonurl": "/pix/i/risk_xss.svg",
         "illustrationurl": "/admin/tool/mobile/pix/push_notification.svg",
         "progresswidth": 100,
-        "learnmoreplan": "Learn more about your plan"
+        "learnmoreplan": "To learn more about the Moodle app and its plans, see the Moodle app plans documentation."
     }
 }}
 <table role="presentation" style="width:100%;border:none;border-collapse:inherit;border-spacing:0;">
     <tr>
         <td style="padding:8px 0px 8px;border:none;">
-            <p style="margin:0 0 16px 0;color:#1f2328;font-size:16px;font-weight:600;line-height:1.25;text-align:left;">{{{messagegreeting}}}</p>
+            <p style="margin:0 0 16px 0;color:#1f2328;font-size:16px;font-weight:600;line-height:1.25;text-align:left;">{{messagegreeting}}</p>
         </td>
     </tr>
 </table>
