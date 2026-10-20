@@ -1608,10 +1608,6 @@ final class external_test extends \core_external\tests\externallib_testcase {
         /** @var structure $structure */
         $structure = $quizobj->get_structure();
         $structure->update_slot_display_number($structure->get_slot_id_for_slot(1), '1.a');
-        $sections = $structure->get_sections();
-        $firstsection = reset($sections);
-        $structure->set_section_heading($firstsection->id, 'Section heading');
-        $structure->add_section_heading($structure->get_page_number_for_slot(2), 'Second section heading');
 
         // Set correctness mask so questions state can be fetched only after finishing the attempt.
         $DB->set_field('quiz', 'reviewcorrectness', display_options::IMMEDIATELY_AFTER, ['id' => $quiz->id]);
@@ -1634,8 +1630,6 @@ final class external_test extends \core_external\tests\externallib_testcase {
         $this->assertCount(0, $result['messages']);
         $this->assertCount(1, $result['questions']);
         $this->assertEquals(1, $result['questions'][0]['slot']);
-        $this->assertIsString($result['questions'][0]['slotheading']);
-        $this->assertEquals('Section heading', $result['questions'][0]['slotheading']);
         $this->assertArrayNotHasKey('number', $result['questions'][0]);
         $this->assertEquals('1.a', $result['questions'][0]['questionnumber']);
         $this->assertEquals('numerical', $result['questions'][0]['type']);
@@ -1660,8 +1654,6 @@ final class external_test extends \core_external\tests\externallib_testcase {
         $this->assertCount(0, $result['messages']);
         $this->assertCount(1, $result['questions']);
         $this->assertEquals(2, $result['questions'][0]['slot']);
-        $this->assertIsString($result['questions'][0]['slotheading']);
-        $this->assertEquals('Second section heading', $result['questions'][0]['slotheading']);
         $this->assertEquals(2, $result['questions'][0]['questionnumber']);
         $this->assertEquals(2, $result['questions'][0]['number']);
         $this->assertEquals('numerical', $result['questions'][0]['type']);
@@ -1681,8 +1673,6 @@ final class external_test extends \core_external\tests\externallib_testcase {
         // Now we should receive the question state.
         $result = mod_quiz_external::get_attempt_review($attempt->id, 1);
         $result = external_api::clean_returnvalue(mod_quiz_external::get_attempt_review_returns(), $result);
-        $this->assertIsString($result['questions'][0]['slotheading']);
-        $this->assertEquals('Second section heading', $result['questions'][0]['slotheading']);
         $this->assertEquals('notanswered', $result['questions'][0]['stateclass']);
         $this->assertEquals('gaveup', $result['questions'][0]['state']);
 
@@ -1697,8 +1687,8 @@ final class external_test extends \core_external\tests\externallib_testcase {
         // We receive two questions per page.
         $result = mod_quiz_external::get_attempt_data($attempt->id, 0);
         $result = external_api::clean_returnvalue(mod_quiz_external::get_attempt_data_returns(), $result);
-        $this->assertCount(1, $result['questions']);
-        $this->assertEquals(1, $result['nextpage']);
+        $this->assertCount(2, $result['questions']);
+        $this->assertEquals(-1, $result['nextpage']);
 
         // Check questions looks good.
         $found = 0;
@@ -1710,8 +1700,61 @@ final class external_test extends \core_external\tests\externallib_testcase {
                 }
             }
         }
-        $this->assertEquals(1, $found);
+        $this->assertEquals(2, $found);
+    }
 
+    /**
+     * Test section headings returned by attempt data, summary and review.
+     *
+     * @param string $firstheading heading for the first section
+     * @param string|null $secondheading heading for a second section, or null for a single section
+     * @param array $expected expected headings for the two question slots
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('attempt_section_headings_provider')]
+    public function test_attempt_section_headings(string $firstheading, ?string $secondheading, array $expected): void {
+        $expected = array_map(fn($heading) => $heading ?? get_string('sectionnoname', 'quiz'), $expected);
+        [$quiz, , $quizobj] = $this->create_quiz_with_questions();
+        $structure = $quizobj->get_structure();
+        $sections = $structure->get_sections();
+        $firstsection = reset($sections);
+        $structure->set_section_heading($firstsection->id, $firstheading);
+        if ($secondheading !== null) {
+            $structure->add_section_heading($structure->get_page_number_for_slot(2), $secondheading);
+        }
+
+        $quizobj = quiz_settings::create($quiz->id, $this->student->id);
+        [$attempt, $attemptobj] = $this->create_quiz_attempt_object(quizobj: $quizobj, started: true);
+        $this->setUser($this->student);
+
+        foreach ($expected as $page => $heading) {
+            $result = mod_quiz_external::get_attempt_data($attempt->id, $page);
+            $result = external_api::clean_returnvalue(mod_quiz_external::get_attempt_data_returns(), $result);
+            $this->assertSame($heading, $result['questions'][0]['slotheading']);
+        }
+
+        $result = mod_quiz_external::get_attempt_summary($attempt->id);
+        $result = external_api::clean_returnvalue(mod_quiz_external::get_attempt_summary_returns(), $result);
+        $this->assertSame($expected, array_column($result['questions'], 'slotheading'));
+
+        $attemptobj->process_submit(time(), false);
+        $attemptobj->process_grade_submission(time());
+        $result = mod_quiz_external::get_attempt_review($attempt->id);
+        $result = external_api::clean_returnvalue(mod_quiz_external::get_attempt_review_returns(), $result);
+        $this->assertSame($expected, array_column($result['questions'], 'slotheading'));
+    }
+
+    /**
+     * Section heading scenarios for the attempt endpoints.
+     *
+     * @return \Generator
+     */
+    public static function attempt_section_headings_provider(): \Generator {
+        yield 'named sections' => ['First section', 'Second section', ['First section', 'Second section']];
+        yield 'unnamed sections' => ['', '', [null, null]];
+        yield 'single unnamed section' => ['', null, ['', '']];
+        yield 'single named section' => ['First section', null, ['First section', '']];
+        yield 'heading zero' => ['0', null, ['0', '']];
+        yield 'heading with link' => ['<a href="https://example.com">First section</a>', null, ['First section', '']];
     }
 
     /**
@@ -1767,11 +1810,6 @@ final class external_test extends \core_external\tests\externallib_testcase {
         $timenow = time();
         // Create a new quiz with one attempt started.
         list($quiz, $context, $quizobj, $attempt, $attemptobj) = $this->create_quiz_with_questions(true);
-        $structure = $quizobj->get_structure();
-        $sections = $structure->get_sections();
-        $firstsection = reset($sections);
-        $structure->set_section_heading($firstsection->id, 'Section heading');
-        $structure->add_section_heading($structure->get_page_number_for_slot(2), 'Second section heading');
 
         $this->setUser($this->student);
         $result = mod_quiz_external::get_attempt_summary($attempt->id);
@@ -1780,12 +1818,8 @@ final class external_test extends \core_external\tests\externallib_testcase {
         // Check the state, flagged and mark data is correct.
         $this->assertEquals('todo', $result['questions'][0]['state']);
         $this->assertEquals('notyetanswered', $result['questions'][0]['stateclass']);
-        $this->assertIsString($result['questions'][0]['slotheading']);
-        $this->assertEquals('Section heading', $result['questions'][0]['slotheading']);
         $this->assertEquals('todo', $result['questions'][1]['state']);
         $this->assertEquals('notyetanswered', $result['questions'][1]['stateclass']);
-        $this->assertIsString($result['questions'][1]['slotheading']);
-        $this->assertEquals('Second section heading', $result['questions'][1]['slotheading']);
         $this->assertEquals(1, $result['questions'][0]['number']);
         $this->assertEquals(2, $result['questions'][1]['number']);
         $this->assertFalse($result['questions'][0]['flagged']);
@@ -2140,11 +2174,6 @@ final class external_test extends \core_external\tests\externallib_testcase {
 
         // Create a new quiz with two questions and one attempt finished.
         [$quiz, , $quizobj, $attempt] = $this->create_quiz_with_questions(true, true);
-        $structure = $quizobj->get_structure();
-        $sections = $structure->get_sections();
-        $firstsection = reset($sections);
-        $structure->set_section_heading($firstsection->id, 'Section heading');
-        $structure->add_section_heading($structure->get_page_number_for_slot(2), 'Second section heading');
 
         // Add feedback to the quiz.
         $feedback = new \stdClass();
@@ -2172,12 +2201,8 @@ final class external_test extends \core_external\tests\externallib_testcase {
         $this->assertCount(2, $result['questions']);
         $this->assertEquals('gradedright', $result['questions'][0]['state']);
         $this->assertEquals(1, $result['questions'][0]['slot']);
-        $this->assertIsString($result['questions'][0]['slotheading']);
-        $this->assertEquals('Section heading', $result['questions'][0]['slotheading']);
         $this->assertEquals('gaveup', $result['questions'][1]['state']);
         $this->assertEquals(2, $result['questions'][1]['slot']);
-        $this->assertIsString($result['questions'][1]['slotheading']);
-        $this->assertEquals('Second section heading', $result['questions'][1]['slotheading']);
 
         // Only first page.
         $result = mod_quiz_external::get_attempt_review($attempt->id, 0);
