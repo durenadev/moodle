@@ -1167,12 +1167,16 @@ class mod_quiz_external extends external_api {
      * @return external_single_structure the question data. Some fields may not be returned depending on the quiz display settings.
      * @since  Moodle 3.1
      * @since Moodle 3.2 blockedbyprevious parameter added.
+     * @since Moodle 5.3 slotheading parameter added.
      */
     private static function question_structure() {
         return new external_single_structure(
             [
                 'slot' => new external_value(PARAM_INT, 'slot number'),
-                'slotheading' => new external_value(PARAM_TEXT, 'slot heading'),
+                'slotheading' => new external_value(
+                    PARAM_TEXT,
+                    'Section heading displayed before this question, or empty if none.'
+                ),
                 'type' => new external_value(PARAM_ALPHANUMEXT, 'question type, i.e: multichoice'),
                 'page' => new external_value(PARAM_INT, 'page of the quiz this question appears on'),
                 'questionnumber' => new external_value(PARAM_RAW,
@@ -1239,7 +1243,10 @@ class mod_quiz_external extends external_api {
 
             // Get the heading before this slot for display purposes.
             $heading = $attemptobj->get_heading_before_slot($slot);
-            $heading = $heading ? format_string($heading) : '';
+            if ($heading === '' && count($attemptobj->get_quizobj()->get_sections()) > 1) {
+                $heading = get_string('sectionnoname', 'quiz');
+            }
+            $heading = \core_external\util::format_string($heading, $attemptobj->get_context());
 
             // Navigation information.
             $question = [
