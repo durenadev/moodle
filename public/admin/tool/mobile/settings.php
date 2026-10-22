@@ -517,7 +517,7 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
         'tool_mobile/forcedurlscheme',
         new lang_string('forcedurlscheme_key', 'tool_mobile'),
         new lang_string('forcedurlscheme', 'tool_mobile'),
-        'moodlemobile',
+        api::DEFAULT_URL_SCHEME,
         PARAM_NOTAGS
     ));
 

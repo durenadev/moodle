@@ -61,6 +61,8 @@ class api {
     const QR_CODE_URL = 1;
     /** @var int QR code type login value */
     const QR_CODE_LOGIN = 2;
+    /** @var string Default URL scheme for the Moodle app */
+    const DEFAULT_URL_SCHEME = 'moodlemobile';
     /** @var string Default Android app id */
     const DEFAULT_ANDROID_APP_ID = 'com.moodle.moodlemobile';
     /** @var string Default iOS app id */
@@ -876,7 +878,7 @@ class api {
             return null;
         }
 
-        $urlscheme = !empty($mobilesettings->forcedurlscheme) ? $mobilesettings->forcedurlscheme : 'moodlemobile';
+        $urlscheme = !empty($mobilesettings->forcedurlscheme) ? $mobilesettings->forcedurlscheme : static::DEFAULT_URL_SCHEME;
         $data = $urlscheme . '://' . $CFG->wwwroot;
 
         if ($mobilesettings->qrcodetype == static::QR_CODE_LOGIN) {
