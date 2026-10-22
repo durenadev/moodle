@@ -29,7 +29,8 @@ require_once(__DIR__ . '/../../../config.php');
 
 $serviceshortname  = required_param('service',  PARAM_ALPHANUMEXT);
 $passport          = required_param('passport',  PARAM_RAW);    // Passport send from the app to validate the response URL.
-$urlscheme         = optional_param('urlscheme', 'moodlemobile', PARAM_NOTAGS); // The URL scheme the app supports.
+// The URL scheme that the app supports.
+$urlscheme         = optional_param('urlscheme', \tool_mobile\api::DEFAULT_URL_SCHEME, PARAM_NOTAGS);
 $confirmed         = optional_param('confirmed', false, PARAM_BOOL);  // If we are being redirected after user confirmation.
 $oauthsso          = optional_param('oauthsso', 0, PARAM_INT); // Id of the OpenID issuer (for OAuth direct SSO).
 
