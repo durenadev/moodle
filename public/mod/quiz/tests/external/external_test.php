@@ -2173,7 +2173,7 @@ final class external_test extends \core_external\tests\externallib_testcase {
         global $DB;
 
         // Create a new quiz with two questions and one attempt finished.
-        [$quiz, , $quizobj, $attempt] = $this->create_quiz_with_questions(true, true);
+        [$quiz, , , $attempt] = $this->create_quiz_with_questions(true, true);
 
         // Add feedback to the quiz.
         $feedback = new \stdClass();
