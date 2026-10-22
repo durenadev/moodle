@@ -5,6 +5,7 @@ notes:
         The `slotheading` field is now included in the question data returned by
         the `mod_quiz_get_attempt_data`, `mod_quiz_get_attempt_summary` and
         `mod_quiz_get_attempt_review` web services. It contains the quiz section
-        heading preceding the question, or an empty string when there is no
-        heading.
+        heading preceding the question, including the default heading for an
+        unnamed section in a multi-section quiz. It is empty when there is no
+        section heading.
       type: changed
