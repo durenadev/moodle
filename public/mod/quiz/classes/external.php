@@ -1167,7 +1167,7 @@ class mod_quiz_external extends external_api {
      * @return external_single_structure the question data. Some fields may not be returned depending on the quiz display settings.
      * @since  Moodle 3.1
      * @since Moodle 3.2 blockedbyprevious parameter added.
-     * @since Moodle 5.3 slotheading parameter added.
+     * @since Moodle 6.0 slotheading parameter added.
      */
     private static function question_structure() {
         return new external_single_structure(
@@ -1175,7 +1175,7 @@ class mod_quiz_external extends external_api {
                 'slot' => new external_value(PARAM_INT, 'slot number'),
                 'slotheading' => new external_value(
                     PARAM_TEXT,
-                    'Section heading displayed before this question, or empty if none.'
+                    'Section heading before this question, including the default heading for unnamed sections; empty if none.'
                 ),
                 'type' => new external_value(PARAM_ALPHANUMEXT, 'question type, i.e: multichoice'),
                 'page' => new external_value(PARAM_INT, 'page of the quiz this question appears on'),
