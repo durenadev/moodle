@@ -1508,6 +1508,74 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
     }
 
     /**
+     * Test core_enrol_external::unenrol_user_enrolment() when a user unenrols themselves.
+     */
+    public function test_unenrol_user_enrolment_self(): void {
+        global $DB;
+
+        $this->resetAfterTest(true);
+        $datagen = $this->getDataGenerator();
+        $course = $datagen->create_course();
+        $user1 = $datagen->create_user();
+        $user2 = $datagen->create_user();
+        $datagen->enrol_user($user1->id, $course->id, 'student');
+        $datagen->enrol_user($user2->id, $course->id, 'student');
+        $ue1 = $DB->get_record('user_enrolments', ['userid' => $user1->id], '*', MUST_EXIST);
+        $ue2 = $DB->get_record('user_enrolments', ['userid' => $user2->id], '*', MUST_EXIST);
+
+        // Students cannot unenrol by default.
+        $this->setUser($user1);
+        $data = core_enrol_external::unenrol_user_enrolment($ue1->id);
+        $data = external_api::clean_returnvalue(core_enrol_external::unenrol_user_enrolment_returns(), $data);
+        $this->assertFalse($data['result']);
+
+        // Grant the self unenrol capability: own enrolment only.
+        $studentrole = $DB->get_field('role', 'id', ['shortname' => 'student'], MUST_EXIST);
+        assign_capability('enrol/manual:unenrolself', CAP_ALLOW, $studentrole, \context_course::instance($course->id)->id, true);
+
+        $data = core_enrol_external::unenrol_user_enrolment($ue2->id);
+        $data = external_api::clean_returnvalue(core_enrol_external::unenrol_user_enrolment_returns(), $data);
+        $this->assertFalse($data['result']);
+        $this->assertTrue($DB->record_exists('user_enrolments', ['id' => $ue2->id]));
+
+        $data = core_enrol_external::unenrol_user_enrolment($ue1->id);
+        $data = external_api::clean_returnvalue(core_enrol_external::unenrol_user_enrolment_returns(), $data);
+        $this->assertTrue($data['result']);
+        $this->assertFalse($DB->record_exists('user_enrolments', ['id' => $ue1->id]));
+    }
+
+    /**
+     * Test core_enrol_external::unenrol_user_enrolment() when a user unenrols from a self enrolment.
+     */
+    public function test_unenrol_user_enrolment_self_plugin(): void {
+        global $DB;
+
+        $this->resetAfterTest(true);
+        $datagen = $this->getDataGenerator();
+        $course = $datagen->create_course();
+        $user1 = $datagen->create_user();
+        $user2 = $datagen->create_user();
+        $selfinstance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self'], '*', MUST_EXIST);
+        enrol_get_plugin('self')->update_status($selfinstance, ENROL_INSTANCE_ENABLED);
+        $datagen->enrol_user($user1->id, $course->id, 'student', 'self');
+        $datagen->enrol_user($user2->id, $course->id, 'student', 'self');
+        $ue1 = $DB->get_record('user_enrolments', ['enrolid' => $selfinstance->id, 'userid' => $user1->id], '*', MUST_EXIST);
+        $ue2 = $DB->get_record('user_enrolments', ['enrolid' => $selfinstance->id, 'userid' => $user2->id], '*', MUST_EXIST);
+
+        // Students have enrol/self:unenrolself by default, which only applies to their own enrolment.
+        $this->setUser($user1);
+        $data = core_enrol_external::unenrol_user_enrolment($ue2->id);
+        $data = external_api::clean_returnvalue(core_enrol_external::unenrol_user_enrolment_returns(), $data);
+        $this->assertFalse($data['result']);
+        $this->assertTrue($DB->record_exists('user_enrolments', ['id' => $ue2->id]));
+
+        $data = core_enrol_external::unenrol_user_enrolment($ue1->id);
+        $data = external_api::clean_returnvalue(core_enrol_external::unenrol_user_enrolment_returns(), $data);
+        $this->assertTrue($data['result']);
+        $this->assertFalse($DB->record_exists('user_enrolments', ['id' => $ue1->id]));
+    }
+
+    /**
      * Test for core_enrol_external::test_search_users().
      */
     public function test_search_users(): void {

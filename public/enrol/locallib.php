@@ -794,17 +794,39 @@ class course_enrolment_manager {
     /**
      * Unenrols a user from the course given the users ue entry
      *
-     * @global moodle_database $DB
+     * The current user can unenrol the enrolment if they have the enrol/PLUGIN:unenrol capability. When the
+     * enrolment belongs to the current user, the enrol/PLUGIN:unenrolself capability is also accepted, if the
+     * enrolment plugin defines it.
+     *
      * @param stdClass $ue
      * @return bool
      */
     public function unenrol_user($ue) {
-        global $DB;
-        list ($instance, $plugin) = $this->get_user_enrolment_components($ue);
-        if ($instance && $plugin && $plugin->allow_unenrol_user($instance, $ue) && has_capability("enrol/$instance->enrol:unenrol", $this->context)) {
+        global $USER;
+
+        [$instance, $plugin] = $this->get_user_enrolment_components($ue);
+        if (!$instance || !$plugin) {
+            return false;
+        }
+
+        if (!$plugin->allow_unenrol_user($instance, $ue)) {
+            return false;
+        }
+
+        $capabilities = ["enrol/{$instance->enrol}:unenrol"];
+        if ((int) $USER->id === (int) $ue->userid) {
+            // Not every enrolment plugin defines an unenrolself capability.
+            $selfcapability = "enrol/{$instance->enrol}:unenrolself";
+            if (get_capability_info($selfcapability)) {
+                $capabilities[] = $selfcapability;
+            }
+        }
+
+        if (has_any_capability($capabilities, $this->context)) {
             $plugin->unenrol_user($instance, $ue->userid);
             return true;
         }
+
         return false;
     }
 
