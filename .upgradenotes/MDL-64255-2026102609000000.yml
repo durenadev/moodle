@@ -1,0 +1,10 @@
+issueNumber: MDL-64255
+notes:
+  core_enrol:
+    - message: >-
+        course_enrolment_manager::unenrol_user() now also allows users to
+        unenrol their own enrolment when they have the enrol/PLUGIN:unenrolself
+        capability, so the core_enrol_unenrol_user_enrolment web service can be
+        used for self unenrolment. The web service is now also part of the
+        official Moodle mobile service.
+      type: improved
