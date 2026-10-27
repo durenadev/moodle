@@ -719,4 +719,131 @@ final class course_enrolment_manager_test extends \advanced_testcase {
         ], array_column($forumusers['users'], 'username'));
         $this->assertEquals(7, $forumusers['totalusers']);
     }
+
+    /**
+     * Test unenrol_user() capability handling for the current user's own and other users' enrolments.
+     *
+     * @param string[] $capabilities Capabilities granted to the student role in the course context.
+     * @param bool $ownenrolment Whether the enrolment being removed is the current user's.
+     * @param bool $expected Expected result.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('unenrol_user_provider')]
+    public function test_unenrol_user(array $capabilities, bool $ownenrolment, bool $expected): void {
+        global $DB, $PAGE;
+
+        $this->resetAfterTest();
+        $context = context_course::instance($this->course->id);
+        $studentrole = $DB->get_field('role', 'id', ['shortname' => 'student'], MUST_EXIST);
+        // Start from a clean state: students have no unenrol capabilities by default.
+        foreach (['unenrol', 'unenrolself'] as $cap) {
+            unassign_capability("enrol/manual:{$cap}", $studentrole);
+        }
+        foreach ($capabilities as $capability) {
+            assign_capability($capability, CAP_ALLOW, $studentrole, $context->id, true);
+        }
+
+        $this->setUser($this->users['user0']);
+        $target = $ownenrolment ? $this->users['user0'] : $this->users['user1'];
+        $ue = $DB->get_record_sql(
+            'SELECT ue.* FROM {user_enrolments} ue JOIN {enrol} e ON e.id = ue.enrolid
+              WHERE e.courseid = :courseid AND ue.userid = :userid',
+            ['courseid' => $this->course->id, 'userid' => $target->id],
+        );
+
+        $manager = new course_enrolment_manager($PAGE, $this->course);
+        $this->assertSame($expected, $manager->unenrol_user($ue));
+        $this->assertSame(!$expected, $DB->record_exists('user_enrolments', ['id' => $ue->id]));
+    }
+
+    /**
+     * Data provider for test_unenrol_user().
+     *
+     * @return array
+     */
+    public static function unenrol_user_provider(): array {
+        return [
+            'No capabilities, own enrolment' => [[], true, false],
+            'No capabilities, other enrolment' => [[], false, false],
+            'unenrolself, own enrolment' => [['enrol/manual:unenrolself'], true, true],
+            'unenrolself, other enrolment' => [['enrol/manual:unenrolself'], false, false],
+            'unenrol only, own enrolment' => [['enrol/manual:unenrol'], true, true],
+            'unenrol only, other enrolment' => [['enrol/manual:unenrol'], false, true],
+        ];
+    }
+
+    /**
+     * Test unenrol_user() for self enrolments, using the default enrol/self:unenrolself capability of students.
+     */
+    public function test_unenrol_user_self_enrolment(): void {
+        global $DB, $PAGE;
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $student1 = $generator->create_user();
+        $student2 = $generator->create_user();
+        $generator->enrol_user($student1->id, $this->course->id, 'student', 'self');
+        $generator->enrol_user($student2->id, $this->course->id, 'student', 'self');
+        $selfinstance = $DB->get_record('enrol', ['courseid' => $this->course->id, 'enrol' => 'self'], '*', MUST_EXIST);
+        $ue1 = $DB->get_record('user_enrolments', ['enrolid' => $selfinstance->id, 'userid' => $student1->id], '*', MUST_EXIST);
+        $ue2 = $DB->get_record('user_enrolments', ['enrolid' => $selfinstance->id, 'userid' => $student2->id], '*', MUST_EXIST);
+
+        $this->setUser($student1);
+        $manager = new course_enrolment_manager($PAGE, $this->course);
+
+        // The self unenrol capability does not allow removing other users' enrolments.
+        $this->assertFalse($manager->unenrol_user($ue2));
+        $this->assertTrue($DB->record_exists('user_enrolments', ['id' => $ue2->id]));
+
+        // Students can remove their own self enrolment by default.
+        $this->assertTrue($manager->unenrol_user($ue1));
+        $this->assertFalse($DB->record_exists('user_enrolments', ['id' => $ue1->id]));
+    }
+
+    /**
+     * Test unenrol_user() when the enrolment plugin decides whether the enrolment can be removed.
+     *
+     * The cohort enrolment plugin only allows unenrolling suspended enrolments, and it does not define an
+     * enrol/cohort:unenrolself capability.
+     *
+     * @param int $status User enrolment status.
+     * @param bool $hascapability Whether the student role is granted enrol/cohort:unenrol.
+     * @param bool $expected Expected result.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('unenrol_user_not_allowed_by_plugin_provider')]
+    public function test_unenrol_user_not_allowed_by_plugin(int $status, bool $hascapability, bool $expected): void {
+        global $DB, $PAGE;
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $student = $generator->create_user();
+        $cohort = $generator->create_cohort();
+        $studentrole = $DB->get_field('role', 'id', ['shortname' => 'student'], MUST_EXIST);
+        enrol_get_plugin('cohort')->add_instance($this->course, ['customint1' => $cohort->id, 'roleid' => $studentrole]);
+        $generator->enrol_user($student->id, $this->course->id, 'student', 'cohort', 0, 0, $status);
+        $cohortinstance = $DB->get_record('enrol', ['courseid' => $this->course->id, 'enrol' => 'cohort'], '*', MUST_EXIST);
+        $ue = $DB->get_record('user_enrolments', ['enrolid' => $cohortinstance->id, 'userid' => $student->id], '*', MUST_EXIST);
+
+        if ($hascapability) {
+            $context = context_course::instance($this->course->id);
+            assign_capability('enrol/cohort:unenrol', CAP_ALLOW, $studentrole, $context->id, true);
+        }
+
+        $this->setUser($student);
+        $manager = new course_enrolment_manager($PAGE, $this->course);
+        $this->assertSame($expected, $manager->unenrol_user($ue));
+        $this->assertSame(!$expected, $DB->record_exists('user_enrolments', ['id' => $ue->id]));
+    }
+
+    /**
+     * Data provider for test_unenrol_user_not_allowed_by_plugin().
+     *
+     * @return array
+     */
+    public static function unenrol_user_not_allowed_by_plugin_provider(): array {
+        return [
+            'Active enrolment, with capability' => [ENROL_USER_ACTIVE, true, false],
+            'Suspended enrolment, with capability' => [ENROL_USER_SUSPENDED, true, true],
+            'Suspended enrolment, without capability' => [ENROL_USER_SUSPENDED, false, false],
+        ];
+    }
 }
