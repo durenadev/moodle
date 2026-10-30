@@ -49,6 +49,10 @@ $string['cachedef_plugininfo'] = 'This stores the list of plugins with mobile ad
 $string['cachedef_subscriptioninfo'] = 'This stores the Moodle app subscription information.';
 $string['clickheretolaunchtheapp'] = 'Click here if the app does not open automatically.';
 $string['configmobilecssurl'] = 'A CSS file to customise your mobile app interface.';
+$string['coursedownloadsintheapp'] = 'Course downloads in the app';
+$string['coursedownloadsintheapp_description'] = 'Course downloads is set up on your site, but it\'s not unlimited on your Moodle app.';
+$string['coursesofflineinapp'] = 'Discover a better way to use courses offline in the Moodle app';
+$string['coursesofflineinapp_desc'] = 'You just turned on course downloads. Currently the web download is static content, so learners can only read it. In the Moodle app, they can keep doing the course offline, take quizzes and submit assignments. With Premium, unlimited downloads.';
 $string['currentusage'] = 'Current usage';
 $string['customisation'] = 'Customisation';
 $string['customlangstrings'] = 'Custom language strings';
@@ -225,6 +229,7 @@ $string['scriptallowlist_desc'] = 'Enter the domains from which external JavaScr
 Each domain must be written on a separate line. Scripts whose source belongs to one of the listed domains will be allowed to load. Scripts from other domains will continue to be blocked.<br>
 Inline JavaScript is always blocked and cannot be allowed.';
 $string['sectionnavigation'] = 'Linear section navigation';
+$string['seeplandetails'] = 'See plan details';
 $string['selfsignedoruntrustedcertificatewarning'] = 'It seems that the HTTPS certificate is self-signed or not trusted. The mobile app will only work with trusted sites. Please use any online SSL checker to diagnose the problem. If it indicates that your certificate is OK, you can ignore this warning.';
 $string['setuplink'] = 'App download page';
 $string['setuplink_desc'] = 'URL of page with options to download the mobile app from the App Store and Google Play. The app download page link is displayed in the page footer and in a user\'s profile. Leave blank to not display a link.';

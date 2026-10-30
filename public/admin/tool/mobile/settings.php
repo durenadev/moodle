@@ -109,6 +109,23 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
                 'additionalhtml_heading',
             );
         }
+
+        if (!empty($CFG->downloadcoursecontentallowed) && ($downloadcoursepage = $ADMIN->locate('downloadcoursecontent'))) {
+            $downloadcoursepage->add_before(
+                new admin_setting_heading(
+                    'tool_mobile/downloadcoursecontentpromotion',
+                    '',
+                    $OUTPUT->render_from_template('tool_mobile/feature_banner', [
+                        'iconclass' => 'fa-solid fa-mobile-screen-button',
+                        'title' => get_string('coursesofflineinapp', 'tool_mobile'),
+                        'message' => get_string('coursesofflineinapp_desc', 'tool_mobile'),
+                        'buttonstr' => get_string('seeplandetails', 'tool_mobile'),
+                        'buttonurl' => $subscriptionurl,
+                    ]),
+                ),
+                'downloadcoursecontentallowed',
+            );
+        }
     }
 
     // Setting pages group.

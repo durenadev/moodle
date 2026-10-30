@@ -166,6 +166,9 @@ class subscription implements \renderable, \templatable {
             if (!empty(get_config('core_admin', 'logo')) || !empty(get_config('core_admin', 'logocompact'))) {
                 $data['morecurrentsetup']['logoinapp'] = 1;
             }
+            if (!empty($CFG->downloadcoursecontentallowed)) {
+                $data['morecurrentsetup']['coursedownloadsinapp'] = 1;
+            }
         }
 
         if (!empty($data['subscription']['expiretime'])) {
