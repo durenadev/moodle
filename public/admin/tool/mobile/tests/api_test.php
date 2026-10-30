@@ -26,6 +26,7 @@ namespace tool_mobile;
  */
 #[\PHPUnit\Framework\Attributes\CoversMethod(\tool_mobile\api::class, 'get_normalized_plan')]
 #[\PHPUnit\Framework\Attributes\CoversMethod(\tool_mobile\api::class, 'is_premium_or_bma_plan')]
+#[\PHPUnit\Framework\Attributes\CoversMethod(\tool_mobile\api::class, 'get_course_downloads_limit')]
 #[\PHPUnit\Framework\Attributes\CoversMethod(\tool_mobile\api::class, 'contains_matomo_tracking')]
 #[\PHPUnit\Framework\Attributes\CoversMethod(\tool_mobile\api::class, 'has_matomo_additional_html')]
 final class api_test extends \core_external\tests\externallib_testcase {
@@ -90,6 +91,27 @@ final class api_test extends \core_external\tests\externallib_testcase {
             'subscription' => ['plan' => 'free'],
         ]));
         $this->assertFalse(api::is_premium_or_bma_plan(null, false));
+    }
+
+    /**
+     * Test the course downloads limit extraction from the subscription data.
+     */
+    public function test_get_course_downloads_limit(): void {
+        $subscription = fn($limit) => [
+            'subscription' => [
+                'features' => [
+                    ['name' => 'pushnotificationsdevices', 'limit' => 50],
+                    ['name' => 'coursesdownload', 'limit' => $limit],
+                ],
+            ],
+        ];
+
+        $this->assertSame(2, api::get_course_downloads_limit($subscription(2)));
+        $this->assertSame(4, api::get_course_downloads_limit($subscription('4')));
+        $this->assertNull(api::get_course_downloads_limit($subscription(null)));
+        $this->assertNull(api::get_course_downloads_limit($subscription(0)));
+        $this->assertNull(api::get_course_downloads_limit(['subscription' => ['features' => []]]));
+        $this->assertNull(api::get_course_downloads_limit(null));
     }
 
     /**

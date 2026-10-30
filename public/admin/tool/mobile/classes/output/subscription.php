@@ -258,6 +258,20 @@ class subscription implements \renderable, \templatable {
             if (!empty(get_config('core_admin', 'logo')) || !empty(get_config('core_admin', 'logocompact'))) {
                 $data['morecurrentsetup']['logoinapp'] = 1;
             }
+            if (!empty($CFG->downloadcoursecontentallowed)) {
+                $data['morecurrentsetup']['coursedownloadsinapp'] = 1;
+                $coursedownloadslimit = api::get_course_downloads_limit($data);
+                if ($coursedownloadslimit) {
+                    $data['morecurrentsetup']['coursedownloadsdescription'] = get_string(
+                        'coursedownloadsintheapp_description',
+                        'tool_mobile',
+                        [
+                            'plan' => $data['subscription']['name'] ?? $currentplan,
+                            'limit' => $coursedownloadslimit,
+                        ],
+                    );
+                }
+            }
         }
 
         if (!empty($data['subscription']['expiretime'])) {

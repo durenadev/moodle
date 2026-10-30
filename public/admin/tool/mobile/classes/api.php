@@ -113,6 +113,25 @@ class api {
     }
 
     /**
+     * Get the course downloads limit per device for the provided subscription.
+     *
+     * @param ?array $subscriptiondata Subscription information returned by the Apps Portal API.
+     * @return ?int The limit, or null if it is unknown or unlimited.
+     */
+    public static function get_course_downloads_limit(?array $subscriptiondata): ?int {
+        foreach ($subscriptiondata['subscription']['features'] ?? [] as $feature) {
+            if (($feature['name'] ?? null) !== 'coursesdownload') {
+                continue;
+            }
+
+            $limit = $feature['limit'] ?? null;
+            return is_numeric($limit) && (int) $limit > 0 ? (int) $limit : null;
+        }
+
+        return null;
+    }
+
+    /**
      * Check whether the provided HTML content contains Matomo tracking code.
      *
      * @param ?string $content HTML content to inspect.
