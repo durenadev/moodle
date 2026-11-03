@@ -1,0 +1,102 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_mobile/current_setup_message
+
+    Rich HTML notification about the Moodle app features related to the current site setup.
+
+    The intro is only displayed in emails, it is hidden in Moodle pages by the d-none class.
+
+    Context variables required for this template:
+    * heading
+    * intro
+    * setuplabel
+    * setuplines Array of lines with text and iconurl.
+    * benefitslabel
+    * benefitlines Array of lines with text and iconurl.
+    * buttonlabel
+    * buttonurl
+
+    Example context (json):
+    {
+        "heading": "Give your students more in the Moodle app",
+        "intro": "You're receiving this email because you're an administrator of My Test Moodle.",
+        "setuplabel": "What you've set up",
+        "setuplines": [
+            {
+                "text": "Matomo: set up on your site, but not tracking your Moodle mobile app yet.",
+                "iconurl": "/admin/tool/mobile/pix/currentsetup_chartline.svg"
+            },
+            {
+                "text": "Your site logo: added, but it doesn't show in the Moodle mobile app yet.",
+                "iconurl": "/admin/tool/mobile/pix/currentsetup_image.svg"
+            }
+        ],
+        "benefitslabel": "What your students get with Premium",
+        "benefitlines": [
+            {
+                "text": "Unlimited offline course downloads (free plan is limited to 2 per device)",
+                "iconurl": "/admin/tool/mobile/pix/currentsetup_download.svg"
+            },
+            {
+                "text": "Biometric login instead of repeated 2FA",
+                "iconurl": "/admin/tool/mobile/pix/currentsetup_biometric.svg"
+            },
+            {
+                "text": "Unlimited push notifications for all students",
+                "iconurl": "/admin/tool/mobile/pix/currentsetup_bell.svg"
+            }
+        ],
+        "buttonlabel": "See plan details",
+        "buttonurl": "https://example.com/admin/tool/mobile/subscription.php"
+    }
+}}
+<p class="d-none" style="margin:0 0 16px 0;color:#1f2328;font-size:14px;line-height:1.5;">{{intro}}</p>
+<table class="tool-mobile-current-setup-card" style="width:100%;border-radius:12px;border:1px solid #e0e0e0;border-collapse:inherit;border-spacing:0;background:#ffffff;font-size:14px;">
+    <tr>
+        <td style="padding:24px;border:none;">
+            <h4 style="margin:0 0 16px 0;font-weight:600;color:#1f2328;font-size:16px;line-height:1.25;">{{heading}}</h4>
+            <p style="margin:0 0 8px 0;color:#57606a;font-size:12px;line-height:1.4;text-transform:uppercase;letter-spacing:0.5px;">{{setuplabel}}</p>
+            <table role="presentation" style="width:100%;margin:0 0 16px 0;border:none;border-collapse:inherit;border-spacing:0;">
+                {{#setuplines}}
+                <tr>
+                    <td style="width:16px;padding:6px 12px 6px 0;border:none;vertical-align:top;">
+                        <img src="{{iconurl}}" alt="" aria-hidden="true" width="16" height="16" style="display:block;margin-top:2px;">
+                    </td>
+                    <td style="padding:6px 0;color:#1f2328;border:none;line-height:1.5;vertical-align:top;">{{text}}</td>
+                </tr>
+                {{/setuplines}}
+            </table>
+            <p style="margin:0 0 8px 0;color:#57606a;font-size:12px;line-height:1.4;text-transform:uppercase;letter-spacing:0.5px;">{{benefitslabel}}</p>
+            <table role="presentation" style="width:100%;border:none;border-collapse:inherit;border-spacing:0;">
+                {{#benefitlines}}
+                <tr>
+                    <td style="width:16px;padding:6px 12px 6px 0;border:none;vertical-align:top;">
+                        <img src="{{iconurl}}" alt="" aria-hidden="true" width="16" height="16" style="display:block;margin-top:2px;">
+                    </td>
+                    <td style="padding:6px 0;color:#1f2328;border:none;line-height:1.5;vertical-align:top;">{{text}}</td>
+                </tr>
+                {{/benefitlines}}
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding:12px 20px;background:#f8f9fa;border:none;border-top:1px solid #e0e0e0;border-radius:0 0 12px 12px;overflow:hidden;text-align:right;">
+            <a href="{{buttonurl}}" style="display:inline-block;background:#0969da;color:#ffffff;text-decoration:none;padding:8px 10px;border-radius:12px;line-height:1.2;">{{buttonlabel}}</a>
+        </td>
+    </tr>
+</table>
