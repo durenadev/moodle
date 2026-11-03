@@ -59,4 +59,15 @@ class renderer extends plugin_renderer_base {
         $data = $message->export_for_template($this);
         return parent::render_from_template('tool_mobile/push_notification_limit_message', $data);
     }
+
+    /**
+     * Defer to template.
+     *
+     * @param \tool_mobile\output\current_setup_message $message Current setup message.
+     * @return string HTML
+     */
+    protected function render_current_setup_message(\tool_mobile\output\current_setup_message $message): string {
+        $data = $message->export_for_template($this);
+        return parent::render_from_template('tool_mobile/current_setup_message', $data);
+    }
 }
