@@ -1,0 +1,65 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_mobile/current_setup_message_textemail
+
+    Plain text email template for the Moodle app features related to the current site setup.
+
+    Context variables required for this template:
+    * heading
+    * intro
+    * setuplabel
+    * setuplines Array of lines with text.
+    * benefitslabel
+    * benefitlines Array of lines with text.
+    * buttonlabel
+    * buttonurl
+
+    Example context (json):
+    {
+        "heading": "Give your students more in the Moodle app",
+        "intro": "You're receiving this email because you're an administrator of My Test Moodle.",
+        "setuplabel": "What you've set up",
+        "setuplines": [
+            {"text": "Matomo: set up on your site, but not tracking your Moodle app yet."},
+            {"text": "Your site logo: added, but students don't see it in the app yet."}
+        ],
+        "benefitslabel": "What your students get with Premium",
+        "benefitlines": [
+            {"text": "Unlimited offline course downloads (free plan is limited to 2 per device)"},
+            {"text": "Biometric login instead of repeated 2FA"},
+            {"text": "Unlimited push notifications for all students"}
+        ],
+        "buttonlabel": "See plan details",
+        "buttonurl": "https://example.com/admin/tool/mobile/subscription.php"
+    }
+}}
+{{{intro}}}
+
+{{{heading}}}
+
+{{{setuplabel}}}
+{{#setuplines}}
+- {{{text}}}
+{{/setuplines}}
+
+{{{benefitslabel}}}
+{{#benefitlines}}
+- {{{text}}}
+{{/benefitlines}}
+
+{{{buttonlabel}}}: {{{buttonurl}}}
