@@ -1,0 +1,73 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_mobile/mobile_services_off_message
+
+    Rich HTML notification about the mobile services being turned off on the site.
+
+    The intro is only displayed in emails, it is hidden in Moodle pages by the d-none class.
+
+    Context variables required for this template:
+    * heading
+    * iconurl
+    * intro
+    * body
+    * footernote
+    * buttonlabel
+    * buttonurl
+
+    Example context (json):
+    {
+        "heading": "Mobile app services are turned off on your site",
+        "iconurl": "/admin/tool/mobile/pix/mobileservicesoff_warning.svg",
+        "intro": "You're receiving this email because you're an administrator of My Test Moodle.",
+        "body": "Students can only use the Moodle mobile app with your site when mobile services are on.",
+        "footernote": "If you turned this off on purpose, you can dismiss this reminder.",
+        "buttonlabel": "Enable this setting",
+        "buttonurl": "https://example.com/admin/search.php?query=enablemobilewebservice"
+    }
+}}
+<p class="d-none" style="margin:0 0 16px 0;color:#1f2328;font-size:14px;line-height:1.5;">{{intro}}</p>
+<table class="tool-mobile-services-off-card" style="width:100%;border-radius:12px;border:1px solid #e0e0e0;border-collapse:inherit;border-spacing:0;background:#ffffff;font-size:14px;">
+    <tr>
+        <td style="padding:24px;border:none;">
+            <table role="presentation" style="margin:0 0 12px 0;border:none;border-collapse:inherit;border-spacing:0;">
+                <tr>
+                    <td style="width:16px;padding:0 10px 0 0;border:none;vertical-align:middle;">
+                        <img src="{{iconurl}}" alt="" aria-hidden="true" width="16" height="16" style="display:block;">
+                    </td>
+                    <td style="padding:0;border:none;vertical-align:middle;">
+                        <h4 style="margin:0;font-weight:600;color:#1f2328;font-size:16px;line-height:1.25;">{{heading}}</h4>
+                    </td>
+                </tr>
+            </table>
+            <p style="margin:0;color:#1f2328;line-height:1.5;">{{body}}</p>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding:12px 20px;background:#f8f9fa;border:none;border-top:1px solid #e0e0e0;border-radius:0 0 12px 12px;overflow:hidden;">
+            <table role="presentation" style="width:100%;border:none;border-collapse:inherit;border-spacing:0;">
+                <tr>
+                    <td style="padding:0 12px 0 0;border:none;vertical-align:middle;color:#6a737d;font-size:12px;line-height:1.5;">{{footernote}}</td>
+                    <td align="right" style="padding:0;border:none;vertical-align:middle;text-align:right;white-space:nowrap;">
+                        <a href="{{buttonurl}}" style="display:inline-block;background:#0969da;color:#ffffff;text-decoration:none;padding:8px 10px;border-radius:12px;line-height:1.2;">{{buttonlabel}}</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
