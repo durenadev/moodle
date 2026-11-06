@@ -1,0 +1,48 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_mobile/mobile_user_share_message_textemail
+
+    Plain text email template for the share of the site active users that use the Moodle app.
+
+    Context variables required for this template:
+    * heading
+    * intro
+    * usage
+    * benefits
+    * buttonlabel
+    * buttonurl
+
+    Example context (json):
+    {
+        "heading": "Your students are already on the Moodle mobile app",
+        "intro": "You're receiving this email because you're an administrator of My Test Moodle.",
+        "usage": "62% of your active users (180 people) used it this month.",
+        "benefits": "With a Premium plan you can give them more: your branding in the app, unlimited course downloads, and biometric login.",
+        "buttonlabel": "View plan details",
+        "buttonurl": "https://example.com/admin/tool/mobile/subscription.php"
+    }
+}}
+{{{intro}}}
+
+{{{heading}}}
+
+{{{usage}}}
+
+{{{benefits}}}
+
+{{{buttonlabel}}}: {{{buttonurl}}}
