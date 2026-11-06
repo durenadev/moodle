@@ -81,4 +81,15 @@ class renderer extends plugin_renderer_base {
         $data = $message->export_for_template($this);
         return parent::render_from_template('tool_mobile/mobile_user_share_message', $data);
     }
+
+    /**
+     * Render the mobile services off message.
+     *
+     * @param \tool_mobile\output\mobile_services_off_message $message Mobile services off message.
+     * @return string HTML
+     */
+    protected function render_mobile_services_off_message(\tool_mobile\output\mobile_services_off_message $message): string {
+        $data = $message->export_for_template($this);
+        return parent::render_from_template('tool_mobile/mobile_services_off_message', $data);
+    }
 }
