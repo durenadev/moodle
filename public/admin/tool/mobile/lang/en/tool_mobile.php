@@ -166,6 +166,8 @@ $string['matomointheapp'] = 'Matomo in the app';
 $string['matomointheapp_description'] = 'Matomo is set up on your site, but it\'s not tracking your Moodle app yet.';
 $string['messageprovider:currentsetup'] = 'Moodle app features related to your site setup';
 $string['messageprovider:currentsetup_help'] = 'This notification is sent some weeks after a site logo or Matomo is configured on the site, to explain how these features can also be used in the Moodle app with a Premium plan. It is sent at most once every six months.';
+$string['messageprovider:mobileusershare'] = 'Share of active users on the Moodle app';
+$string['messageprovider:mobileusershare_help'] = 'This notification is sent when more than half of the site active users use the Moodle app, to explain what a Premium plan can offer them. It is sent at most once a year.';
 $string['messageprovider:pushlimitreached'] = 'Push notification plan limit reached';
 $string['messageprovider:pushlimitreached_help'] = 'This notification is sent when the number of devices that can receive push notifications reaches its monthly limit. Once the limit is reached, push notifications will not be delivered to new devices until the next month, or until the plan is upgraded.';
 $string['minimumversion'] = 'If an app version is specified (3.8.0 or higher), any users using an older app version will be prompted to upgrade their app before being allowed access to the site.';
@@ -181,6 +183,11 @@ $string['mobilecssurl'] = 'CSS';
 $string['mobilefeatures'] = 'Mobile features';
 $string['mobilenotificationsdisabledwarning'] = 'Mobile notifications are not enabled. They should be enabled in Notification settings.';
 $string['mobilesettings'] = 'Mobile settings';
+$string['mobileusersharebenefits'] = 'With a Premium plan you can give them more: your branding in the app, unlimited course downloads, and biometric login.';
+$string['mobileusersharecontext'] = 'More than {$a}% of your active users already use the Moodle mobile app.';
+$string['mobileusershareheading'] = 'Your students are already on the Moodle mobile app';
+$string['mobileusersharesubject'] = '{$a}% of your users are on the Moodle mobile app';
+$string['mobileusershareusage'] = '{$a->percentage}% of your active users ({$a->users} people) used it this month.';
 $string['modulenavigation'] = 'Linear activity navigation';
 $string['moodleappsportalfeatureswarning'] = 'Please note that some features may be restricted depending on your Moodle app subscription. For details, visit the <a href="{$a}" target="_blank">Moodle Apps Portal</a>.';
 $string['movedcsstopremiumfeatures'] = 'CSS for mobile app customisation has been moved to the <a href="{$a->url}">{$a->urlname}</a> section.';
@@ -242,7 +249,7 @@ $string['scriptallowlist_desc'] = 'Enter the domains from which external JavaScr
 Each domain must be written on a separate line. Scripts whose source belongs to one of the listed domains will be allowed to load. Scripts from other domains will continue to be blocked.<br>
 Inline JavaScript is always blocked and cannot be allowed.';
 $string['sectionnavigation'] = 'Linear section navigation';
-$string['seeplandetails'] = 'See plan details';
+$string['seeplandetails'] = 'View plan details';
 $string['selfsignedoruntrustedcertificatewarning'] = 'It seems that the HTTPS certificate is self-signed or not trusted. The mobile app will only work with trusted sites. Please use any online SSL checker to diagnose the problem. If it indicates that your certificate is OK, you can ignore this warning.';
 $string['setuplink'] = 'App download page';
 $string['setuplink_desc'] = 'URL of page with options to download the mobile app from the App Store and Google Play. The app download page link is displayed in the page footer and in a user\'s profile. Leave blank to not display a link.';
@@ -265,6 +272,7 @@ $string['subscriptionregister'] = 'For details of the various app plans, and to 
 $string['subscriptionsseemore'] = 'Note: The information displayed is not updated in real time. You may need to log out and log in again to see updates. For information on upgrading your app plan, please log in to the <a href="{$a}" target="_blank">Moodle Apps Portal</a>.';
 $string['switchaccount'] = 'Switch account';
 $string['tasknotifycurrentsetuptoadmins'] = 'Notify admins about Moodle app features related to their site setup';
+$string['tasknotifymobileusersharetoadmins'] = 'Notify admins when most of their active users use the Moodle app';
 $string['tasknotifypushnotificationlimittoadmins'] = 'Notify admins when mobile app push notification limit is reached';
 $string['taskrefreshsubscriptioncache'] = 'Refresh Moodle app subscription information cache';
 $string['typeoflogin'] = 'Type of login';

@@ -26,6 +26,7 @@
 namespace tool_mobile\output;
 
 use tool_mobile\api;
+use tool_mobile\local\mobile_user_share;
 
 /**
  * Subscription page.
@@ -179,6 +180,14 @@ class subscription implements \renderable, \templatable {
                         ],
                     );
                 }
+            }
+            // Admins notified about the Moodle app usage keep seeing it until the next notification may be sent.
+            if (mobile_user_share::notified_recently()) {
+                $data['morecurrentsetup']['mobileusersharedescription'] = get_string(
+                    'mobileusersharecontext',
+                    'tool_mobile',
+                    mobile_user_share::THRESHOLD,
+                );
             }
         }
 

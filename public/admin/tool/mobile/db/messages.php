@@ -42,4 +42,12 @@ $messageproviders = [
         ],
         'capability'  => 'moodle/site:config',
     ],
+    'mobileusershare' => [
+        'defaults' => [
+            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+            'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+            'airnotifier' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+        ],
+        'capability'  => 'moodle/site:config',
+    ],
 ];
