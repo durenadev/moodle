@@ -16,6 +16,8 @@
 
 namespace tool_mobile\output;
 
+use tool_mobile\local\mobile_user_share;
+
 /**
  * Tests for the mobile subscription page output.
  *
@@ -25,6 +27,13 @@ namespace tool_mobile\output;
  */
 #[\PHPUnit\Framework\Attributes\CoversClass(subscription::class)]
 final class subscription_test extends \advanced_testcase {
+    #[\Override]
+    protected function setUp(): void {
+        parent::setUp();
+        $this->resetAfterTest();
+        $this->setAdminUser();
+    }
+
     /**
      * Test splitting a setting into lines on any line ending.
      *
@@ -336,5 +345,90 @@ final class subscription_test extends \advanced_testcase {
             ]),
             2,
         ];
+    }
+
+    /**
+     * Test that the Moodle app usage is displayed, alone in the current setup, until a year after the notification.
+     */
+    public function test_mobile_user_share_description(): void {
+        $clock = $this->mock_clock_with_frozen();
+        set_config('mobileusersharelastnotified', $clock->time(), 'tool_mobile');
+
+        $clock->bump(mobile_user_share::NOTIFICATION_MIN_INTERVAL - 1);
+        $data = $this->export_subscription('free');
+
+        $this->assertEquals([
+            'mobileusersharedescription' => get_string('mobileusersharecontext', 'tool_mobile', mobile_user_share::THRESHOLD),
+        ], $data['morecurrentsetup']);
+
+        $clock->bump();
+        $data = $this->export_subscription('free');
+
+        $this->assertArrayNotHasKey('morecurrentsetup', $data);
+    }
+
+    /**
+     * Test that the Moodle app usage is displayed with the other items of the current setup.
+     */
+    public function test_mobile_user_share_description_with_current_setup(): void {
+        global $CFG;
+
+        $CFG->downloadcoursecontentallowed = 1;
+        $clock = $this->mock_clock_with_frozen();
+        set_config('mobileusersharelastnotified', $clock->time(), 'tool_mobile');
+
+        $data = $this->export_subscription('pro');
+
+        $this->assertEquals(
+            get_string('mobileusersharecontext', 'tool_mobile', mobile_user_share::THRESHOLD),
+            $data['morecurrentsetup']['mobileusersharedescription'],
+        );
+        $this->assertEquals(1, $data['morecurrentsetup']['coursedownloadsinapp']);
+    }
+
+    /**
+     * Test that the Moodle app usage is not displayed when admins were never notified.
+     */
+    public function test_mobile_user_share_description_not_notified(): void {
+        global $CFG;
+
+        $CFG->downloadcoursecontentallowed = 1;
+
+        $data = $this->export_subscription('free');
+
+        $this->assertArrayNotHasKey('mobileusersharedescription', $data['morecurrentsetup']);
+    }
+
+    /**
+     * Test that the Moodle app usage is not displayed for Premium plans.
+     */
+    public function test_mobile_user_share_description_premium(): void {
+        $clock = $this->mock_clock_with_frozen();
+        set_config('mobileusersharelastnotified', $clock->time(), 'tool_mobile');
+
+        $data = $this->export_subscription('premium');
+
+        $this->assertArrayNotHasKey('morecurrentsetup', $data);
+    }
+
+    /**
+     * Export the subscription page for the provided plan.
+     *
+     * @param string $plan Plan identifier.
+     * @return array
+     */
+    private function export_subscription(string $plan): array {
+        global $PAGE;
+
+        $subscription = new subscription([
+            'subscription' => [
+                'plan' => $plan,
+                'name' => ucfirst($plan),
+                'features' => [],
+            ],
+            'availableplans' => [],
+        ]);
+
+        return $subscription->export_for_template($PAGE->get_renderer('tool_mobile'));
     }
 }

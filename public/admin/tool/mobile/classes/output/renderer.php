@@ -70,4 +70,15 @@ class renderer extends plugin_renderer_base {
         $data = $message->export_for_template($this);
         return parent::render_from_template('tool_mobile/current_setup_message', $data);
     }
+
+    /**
+     * Defer to template.
+     *
+     * @param \tool_mobile\output\mobile_user_share_message $message Mobile user share message.
+     * @return string HTML
+     */
+    protected function render_mobile_user_share_message(\tool_mobile\output\mobile_user_share_message $message): string {
+        $data = $message->export_for_template($this);
+        return parent::render_from_template('tool_mobile/mobile_user_share_message', $data);
+    }
 }
