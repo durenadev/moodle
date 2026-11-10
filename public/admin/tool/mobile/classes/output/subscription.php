@@ -252,7 +252,21 @@ class subscription implements \renderable, \templatable {
         $currentplan = api::get_normalized_plan($data, false);
         $data['subscription']['isfree'] = ($currentplan === 'free');
         $data['subscription']['ispremium'] = api::is_premium_or_bma_plan($data, false);
-        if (!$data['subscription']['ispremium']) {
+        // Blocked sites may not receive the plan features.
+        $data['subscription']['features'] ??= [];
+        $data['siteblocked'] = api::is_site_blocked($data);
+        if ($data['siteblocked']) {
+            // The upgrade button of the plan to compare is the only action, so the notice has no button.
+            $data['messagesiteblocked'][] = [
+                'message' => get_string('siteblockednotice', 'tool_mobile'),
+                'title' => get_string('siteblockednoticetitle', 'tool_mobile'),
+                'titleicon' => [
+                    'icon' => 'i/grade_incorrect',
+                    'component' => 'core',
+                ],
+                'headinglevel' => 4,
+            ];
+        } else if (!$data['subscription']['ispremium']) {
             if (api::has_matomo_additional_html()) {
                 $data['morecurrentsetup']['matomoinapp'] = 1;
             }
@@ -306,6 +320,7 @@ class subscription implements \renderable, \templatable {
             if ($plan['plan'] != 'premium') {
                 continue;
             }
+            $plan['features'] ??= [];
             $data['tocompareplan'] = $plan;
         }
 

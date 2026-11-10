@@ -36,6 +36,8 @@
     * messagefullaccess - Optional array of notification objects when the subscription has full access.
     * messagedeprecation - Optional array of notification objects for deprecated plans.
     * messagemissingcredentials - Optional array of notification objects when required credentials are missing.
+    * siteblocked - Whether the site is blocked from the standard Moodle app, pausing the usage information.
+    * messagesiteblocked - Optional array of notification objects when the site is blocked from the standard Moodle app.
     * messageserror, messagessuccess, messageswarning, messagesinfo, messageshtml - Optional collections of generic
         notifications rendered at the top of the page.
     * notifications - Optional object with push notification statistics (currentactivedevices, monthly[] items, etc.).
@@ -231,6 +233,10 @@
     {{/isfree}}
 
     <hr>
+    {{#messagesiteblocked}}
+        {{> core/notification_error}}
+    {{/messagesiteblocked}}
+
     {{#messagefullaccess}}
         {{> core/notification_info}}
     {{/messagefullaccess}}
@@ -244,6 +250,10 @@
             <div class="card flex-fill">
                 <div class="card-body p-4">
                     <h4 class="h4 fw-bold card-title">{{#str}} currentusage, tool_mobile {{/str}}</h4>
+                    {{#siteblocked}}
+                    <p class="text-muted mb-0">{{#str}} siteblockedusagepaused, tool_mobile {{/str}}</p>
+                    {{/siteblocked}}
+                    {{^siteblocked}}
                     {{^ispremium}}
                     <p class="text-muted">{{#str}} upgradeforunlimit, tool_mobile, {{tocompareplan.name}} {{/str}}</p>
                     {{/ispremium}}
@@ -281,6 +291,7 @@
                             {{/ispremium}}
                         {{/limit}}
                     {{/features}}
+                    {{/siteblocked}}
                 </div>
             </div>
             {{#morecurrentsetup}}
@@ -467,6 +478,7 @@
     </div>
     {{/tocompareplan}}
 
+    {{^siteblocked}}
     <div class="card mt-4">
         <div class="card-body p-4 d-flex flex-column">
             <div id="notifications-overview" class="box">
@@ -524,6 +536,7 @@
         </div>
         {{/messagesnotificationsseemore}}
     </div>
+    {{/siteblocked}}
     {{/subscription}}
     {{^subscription}}
     <div class="g-4 align-items-stretch">

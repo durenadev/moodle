@@ -92,4 +92,15 @@ class renderer extends plugin_renderer_base {
         $data = $message->export_for_template($this);
         return parent::render_from_template('tool_mobile/mobile_services_off_message', $data);
     }
+
+    /**
+     * Render the site blocked message.
+     *
+     * @param \tool_mobile\output\site_blocked_message $message Site blocked message.
+     * @return string HTML
+     */
+    protected function render_site_blocked_message(\tool_mobile\output\site_blocked_message $message): string {
+        $data = $message->export_for_template($this);
+        return parent::render_from_template('tool_mobile/site_blocked_message', $data);
+    }
 }

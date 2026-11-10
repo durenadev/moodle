@@ -412,7 +412,57 @@ final class subscription_test extends \advanced_testcase {
     }
 
     /**
-     * Export the subscription page for the provided plan.
+     * Test that blocked sites display the notice instead of the current setup, even without plan features.
+     */
+    public function test_site_blocked(): void {
+        global $CFG, $PAGE;
+
+        $CFG->downloadcoursecontentallowed = 1;
+        $subscription = new subscription([
+            'subscription' => [
+                'plan' => 'free',
+                'restrictaccess' => ['enforce' => true, 'message' => 'The site is no longer supported in this app.'],
+            ],
+            'availableplans' => [
+                ['plan' => 'premium', 'name' => 'Premium', 'price' => '499 €'],
+            ],
+        ]);
+
+        $data = $subscription->export_for_template($PAGE->get_renderer('tool_mobile'));
+
+        $this->assertTrue($data['siteblocked']);
+        $this->assertCount(1, $data['messagesiteblocked']);
+        $this->assertEquals(get_string('siteblockednoticetitle', 'tool_mobile'), $data['messagesiteblocked'][0]['title']);
+        $this->assertEquals(get_string('siteblockednotice', 'tool_mobile'), $data['messagesiteblocked'][0]['message']);
+        $this->assertArrayNotHasKey('morecurrentsetup', $data);
+        $this->assertSame([], $data['subscription']['features']);
+        $this->assertSame([], $data['tocompareplan']['features']);
+
+        $html = $PAGE->get_renderer('tool_mobile')->render($subscription);
+        $this->assertStringContainsString(get_string('siteblockedusagepaused', 'tool_mobile'), $html);
+        $this->assertStringNotContainsString('notifications-overview', $html);
+    }
+
+    /**
+     * Test that sites not blocked do not display the notice.
+     */
+    public function test_site_not_blocked(): void {
+        global $PAGE;
+
+        $data = $this->export_subscription('free');
+
+        $this->assertFalse($data['siteblocked']);
+        $this->assertArrayNotHasKey('messagesiteblocked', $data);
+
+        $html = $PAGE->get_renderer('tool_mobile')->render(new subscription([
+            'subscription' => ['plan' => 'free', 'name' => 'Free', 'features' => []],
+            'availableplans' => [],
+        ]));
+        $this->assertStringNotContainsString(get_string('siteblockedusagepaused', 'tool_mobile'), $html);
+        $this->assertStringContainsString('notifications-overview', $html);
+    }
+
+    /**
      *
      * @param string $plan Plan identifier.
      * @return array
