@@ -27,6 +27,7 @@ namespace tool_mobile;
 #[\PHPUnit\Framework\Attributes\CoversMethod(\tool_mobile\api::class, 'get_normalized_plan')]
 #[\PHPUnit\Framework\Attributes\CoversMethod(\tool_mobile\api::class, 'is_premium_or_bma_plan')]
 #[\PHPUnit\Framework\Attributes\CoversMethod(\tool_mobile\api::class, 'get_course_downloads_limit')]
+#[\PHPUnit\Framework\Attributes\CoversMethod(\tool_mobile\api::class, 'is_site_blocked')]
 #[\PHPUnit\Framework\Attributes\CoversMethod(\tool_mobile\api::class, 'contains_matomo_tracking')]
 #[\PHPUnit\Framework\Attributes\CoversMethod(\tool_mobile\api::class, 'has_matomo_additional_html')]
 final class api_test extends \core_external\tests\externallib_testcase {
@@ -112,6 +113,24 @@ final class api_test extends \core_external\tests\externallib_testcase {
         $this->assertNull(api::get_course_downloads_limit($subscription(0)));
         $this->assertNull(api::get_course_downloads_limit(['subscription' => ['features' => []]]));
         $this->assertNull(api::get_course_downloads_limit(null));
+    }
+
+    /**
+     * Test the detection of sites blocked from the standard Moodle app.
+     */
+    public function test_is_site_blocked(): void {
+        $subscription = fn($restrictaccess) => [
+            'subscription' => [
+                'plan' => 'free',
+                'restrictaccess' => $restrictaccess,
+            ],
+        ];
+
+        $this->assertTrue(api::is_site_blocked($subscription(['enforce' => true, 'message' => 'Blocked'])));
+        $this->assertFalse(api::is_site_blocked($subscription(['enforce' => false, 'message' => 'Blocked'])));
+        $this->assertFalse(api::is_site_blocked($subscription(null)));
+        $this->assertFalse(api::is_site_blocked(['subscription' => ['plan' => 'free']]));
+        $this->assertFalse(api::is_site_blocked(null));
     }
 
     /**

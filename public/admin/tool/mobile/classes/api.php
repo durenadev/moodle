@@ -132,6 +132,16 @@ class api {
     }
 
     /**
+     * Check whether the provided subscription has the access from the standard Moodle app blocked.
+     *
+     * @param ?array $subscriptiondata Subscription information returned by the Apps Portal API.
+     * @return bool
+     */
+    public static function is_site_blocked(?array $subscriptiondata): bool {
+        return !empty($subscriptiondata['subscription']['restrictaccess']['enforce']);
+    }
+
+    /**
      * Check whether the provided HTML content contains Matomo tracking code.
      *
      * @param ?string $content HTML content to inspect.
