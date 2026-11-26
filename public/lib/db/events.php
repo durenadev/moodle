@@ -74,6 +74,12 @@ $observers = [
         'eventname'   => '\core\event\course_module_completion_updated',
         'callback'    => 'core_competency\api::observe_course_module_completion_updated',
     ],
+    // Web services: update user access times.
+    [
+        'eventname'   => '*',
+        'callback'    => '\core_external\observer::update_access_time',
+        'internal'    => false, // Only after transaction commit.
+    ],
 ];
 
 // List of all events triggered by Moodle can be found using Events list report.
